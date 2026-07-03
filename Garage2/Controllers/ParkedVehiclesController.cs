@@ -109,7 +109,7 @@ public class ParkedVehiclesController : Controller
         return View(parkedvehicle);
     }
 
-    // GET: PARKEDVEHICLES/Delete/5
+    // GET: PARKEDVEHICLES/CheckOut/5
     public async Task<IActionResult> CheckOut(int? id)
     {
         if (id == null)
@@ -127,18 +127,28 @@ public class ParkedVehiclesController : Controller
         return View(parkedvehicle);
     }
 
-    // POST: PARKEDVEHICLES/Delete/5
+    // POST: PARKEDVEHICLES/CheckOut/5
     [HttpPost, ActionName("CheckOut")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
+    public async Task<IActionResult> CheckOutConfirmed(int? id)
     {
         var parkedvehicle = await _context.ParkedVehicle.FindAsync(id);
-        if (parkedvehicle != null)
+
+        if (parkedvehicle == null)
         {
-            _context.ParkedVehicle.Remove(parkedvehicle);
+            return NotFound();
         }
 
+        // Save checkout information
+        DateTime checkOutTime = DateTime.Now;
+
+        // Calculate parking duration
+        TimeSpan parkingDuration = checkOutTime - parkedvehicle.ArrivalTime;
+
+        _context.ParkedVehicle.Remove(parkedvehicle);
+
         await _context.SaveChangesAsync();
+
         return RedirectToAction(nameof(Index));
     }
 
