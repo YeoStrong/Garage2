@@ -7,6 +7,8 @@ builder.Services.AddDbContext<Garage2Context>(options => options.UseSqlite("Data
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IVehicleHandler, VehicleHandler>();
+
 var app = builder.Build();
 
 // Auto Migration: Update DB file and table automatically when the application starts.
