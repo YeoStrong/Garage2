@@ -6,14 +6,16 @@ using Garage2.Models.Entities;
 public class ParkedVehiclesController : Controller
 {
     private readonly Garage2Context _context;
+    private readonly IVehicleHandler _vehicleHandler;
 
-    public ParkedVehiclesController(Garage2Context context)
+    public ParkedVehiclesController(Garage2Context context, IVehicleHandler vehicleHandler)
     {
         _context = context;
+        _vehicleHandler = vehicleHandler;
     }
 
     // GET: PARKEDVEHICLES
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
         return View(await _context.ParkedVehicle.ToListAsync());
     }
@@ -84,6 +86,23 @@ public class ParkedVehiclesController : Controller
         if (id != parkedvehicle.Id)
         {
             return NotFound();
+        }
+
+        // Hämta originalet från databasen
+        var original = await _context.ParkedVehicles.AsNoTracking()
+            .FirstOrDefaultAsync(v => v.Id == id);
+
+        if (original == null) { return NotFound(); }
+
+        // Kontrollera endast om användaren ändrade registreringsnumret
+        if (original.RegistrationNumber != parkedvehicle.RegistrationNumber)
+        {
+            bool regExists = await _context.ParkedVehicles.AnyAsync(v => v.RegistrationNumber == parkedvehicle.RegistrationNumber);
+
+            if (regExists)
+            {
+                ModelState.AddModelError("RegistrationNumber", "The registration number already exists. Please enter a different one.");
+            }
         }
 
         if (ModelState.IsValid)

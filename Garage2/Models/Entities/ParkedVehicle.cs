@@ -1,4 +1,5 @@
-﻿using Garage2.Models.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using Garage2.Models.Enums;
 
 namespace Garage2.Models.Entities
 {
@@ -11,6 +12,8 @@ namespace Garage2.Models.Entities
         public string Brand { get; set; }
         public string Model { get; set; }
         public int NumberOfWheels { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}")]
         public DateTime ArrivalTime { get; set; }
     }
 }

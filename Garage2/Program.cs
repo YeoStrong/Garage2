@@ -7,6 +7,8 @@ builder.Services.AddDbContext<Garage2Context>(options => options.UseSqlite("Data
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IVehicleHandler, VehicleHandler>();
+
 var app = builder.Build();
 
 // Auto Migration: Update DB file and table automatically when the application starts.
@@ -29,7 +31,7 @@ using (var scope = app.Services.CreateScope())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error/Error");
-   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -45,5 +47,5 @@ app.MapControllerRoute(
     pattern: "{controller=ParkedVehicles}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-//Komment 
+
 app.Run();
