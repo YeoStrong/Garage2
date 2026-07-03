@@ -9,6 +9,22 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+// Auto Migration: Update DB file and table automatically when the application starts.
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<Garage2Context>();
+        context.Database.EnsureCreated(); // Create DB file and table if they do not exist
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Error occured during Database migration.");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
