@@ -6,6 +6,8 @@
         Motorcycle,
         Bus,
         Truck,
-        Bicycle
+        Bicycle,
+        Airplane,
+        Boat
     }
 }
