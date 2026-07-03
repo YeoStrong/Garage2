@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Garage2.Models.Entities;
-
+using Garage2.Models.ViewModels;
 public class ParkedVehiclesController : Controller
 {
     private readonly Garage2Context _context;
@@ -163,12 +163,26 @@ public class ParkedVehiclesController : Controller
 
         // Calculate parking duration
         TimeSpan parkingDuration = checkOutTime - parkedvehicle.ArrivalTime;
+        // Create the receipt data that will be displayed after check out
+        var receiptViewModel = new ReceiptViewModel
+        {
+            VehicleType = parkedvehicle.VehicleType.ToString(),
+            RegistrationNumber = parkedvehicle.RegistrationNumber,
+            Brand = parkedvehicle.Brand,
+            Model = parkedvehicle.Model,
+            Color = parkedvehicle.Color,
+            NumberOfWheels = parkedvehicle.NumberOfWheels,
+            ArrivalTime = parkedvehicle.ArrivalTime,
+            CheckOutTime = checkOutTime,
+            ParkingDuration = parkingDuration,
+            TotalPrice = 0
+        };
 
         _context.ParkedVehicle.Remove(parkedvehicle);
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index));
+        return View("Receipt", receiptViewModel);
     }
 
     private bool ParkedVehicleExists(int? id)
