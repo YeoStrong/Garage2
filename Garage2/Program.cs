@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Garage2Context") ?? throw new InvalidOperationException("Connection string 'Garage2Context' not found.");
 
-builder.Services.AddDbContext<Garage2Context>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<Garage2Context>(options => options.UseSqlite("Data Source=Garage.db"));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
