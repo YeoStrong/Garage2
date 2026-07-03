@@ -13,6 +13,9 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# User-specific files (macOS + Visual Studio Code)
+*.swp
+
 # Mono auto generated files
 mono_crash.*
 
@@ -361,3 +364,22 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# ASP.NET Core build output
+bin/
+obj/
+out/
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
