@@ -1,7 +1,10 @@
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Garage2.Models.Entities;
+using Garage2.Models.Enums;
+using Garage2.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 public class ParkedVehiclesController : Controller
 {
@@ -41,7 +44,16 @@ public class ParkedVehiclesController : Controller
     // GET: PARKEDVEHICLES/Create
     public IActionResult Create()
     {
-        return View();
+        var viewModel = new ParkedVehicleCreateViewModel();
+
+        viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
+                                     .Cast<VehicleType>()
+                                     .Select(v => new SelectListItem
+                                    {
+                                        Text = v.ToString(),
+                                        Value = v.ToString()
+                                    });
+        return View(viewModel);
     }
 
     // POST: PARKEDVEHICLES/Create
@@ -49,15 +61,34 @@ public class ParkedVehiclesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ArrivalTime")] ParkedVehicle parkedvehicle)
+    public async Task<IActionResult> Create(ParkedVehicleCreateViewModel viewModel)
     {
         if (ModelState.IsValid)
         {
+            var parkedvehicle = new ParkedVehicle
+            {
+                VehicleType = viewModel.VehicleType,
+                RegistrationNumber = viewModel.RegistrationNumber,
+                Color = viewModel.Color,
+                Brand = viewModel.Brand,
+                Model = viewModel.Model,
+                NumberOfWheels = viewModel.NumberOfWheels,
+                ArrivalTime = DateTime.Now
+            };
+
             _context.Add(parkedvehicle);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(parkedvehicle);
+        viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
+                                     .Cast<VehicleType>()
+                                     .Select(v => new SelectListItem
+                                     {
+                                         Text = v.ToString(),
+                                         Value = v.ToString()
+                                     });
+
+        return View(viewModel);
     }
 
     // GET: PARKEDVEHICLES/Edit/5
