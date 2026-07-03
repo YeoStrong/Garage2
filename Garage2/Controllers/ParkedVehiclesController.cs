@@ -110,7 +110,7 @@ public class ParkedVehiclesController : Controller
     }
 
     // GET: PARKEDVEHICLES/Delete/5
-    public async Task<IActionResult> Delete(int? id)
+    public async Task<IActionResult> CheckOut(int? id)
     {
         if (id == null)
         {
@@ -128,7 +128,7 @@ public class ParkedVehiclesController : Controller
     }
 
     // POST: PARKEDVEHICLES/Delete/5
-    [HttpPost, ActionName("Delete")]
+    [HttpPost, ActionName("CheckOut")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id)
     {
