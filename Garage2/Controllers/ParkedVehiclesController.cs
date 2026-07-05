@@ -44,15 +44,15 @@ public class ParkedVehiclesController : Controller
     // GET: PARKEDVEHICLES/Create
     public IActionResult Create()
     {
-        var viewModel = new ParkedVehicleCreateViewModel();
+        var viewModel = new ParkedVehicleFormViewModel();
 
         viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
                                      .Cast<VehicleType>()
                                      .Select(v => new SelectListItem
-                                    {
-                                        Text = v.ToString(),
-                                        Value = v.ToString()
-                                    });
+                                     {
+                                         Text = v.GetDisplayName(),
+                                         Value = v.ToString()
+                                     });
         return View(viewModel);
     }
 
@@ -61,32 +61,52 @@ public class ParkedVehiclesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(ParkedVehicleCreateViewModel viewModel)
+    public async Task<IActionResult> Create(ParkedVehicleFormViewModel viewModel)
     {
+        bool regExists = await _context.ParkedVehicles.AnyAsync(v => v.RegistrationNumber == viewModel.RegistrationNumber);
+
+        if (regExists)
+        {
+            ModelState.AddModelError("RegistrationNumber", "The registration number already exists. Please enter a different one.");
+        }
+
         if (ModelState.IsValid)
         {
-            var parkedvehicle = new ParkedVehicle
+            try
             {
-                VehicleType = viewModel.VehicleType,
-                RegistrationNumber = viewModel.RegistrationNumber,
-                Color = viewModel.Color,
-                Brand = viewModel.Brand,
-                Model = viewModel.Model,
-                NumberOfWheels = viewModel.NumberOfWheels,
-                ArrivalTime = DateTime.Now
-            };
+                var parkedvehicle = new ParkedVehicle
+                {
+                    VehicleType = viewModel.VehicleType,
+                    RegistrationNumber = viewModel.RegistrationNumber,
+                    Color = viewModel.Color ?? string.Empty,
+                    Brand = viewModel.Brand ?? string.Empty,
+                    Model = viewModel.Model ?? string.Empty,
+                    NumberOfWheels = viewModel.NumberOfWheels,
+                    ArrivalTime = DateTime.Now
+                };
 
-            _context.Add(parkedvehicle);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+                _context.Add(parkedvehicle);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = $"Successfully checked in {viewModel.RegistrationNumber}.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+
+                ModelState.AddModelError(string.Empty, "Could not check in vehicle. Please check all fields.");
+                Console.WriteLine("DB ERROR: " + ex.Message);
+            }
         }
+
         viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
-                                     .Cast<VehicleType>()
-                                     .Select(v => new SelectListItem
-                                     {
-                                         Text = v.ToString(),
-                                         Value = v.ToString()
-                                     });
+            .Cast<VehicleType>()
+            .Select(v => new SelectListItem
+            {
+                Text = v.GetDisplayName(),
+                Value = v.ToString()
+            });
 
         return View(viewModel);
     }
@@ -104,7 +124,28 @@ public class ParkedVehiclesController : Controller
         {
             return NotFound();
         }
-        return View(parkedvehicle);
+
+        var vm = new ParkedVehicleFormViewModel
+        {
+            Id = parkedvehicle.Id,
+            RegistrationNumber = parkedvehicle.RegistrationNumber,
+            VehicleType = parkedvehicle.VehicleType,
+            Color = parkedvehicle.Color,
+            Brand = parkedvehicle.Brand,
+            Model = parkedvehicle.Model,
+            NumberOfWheels = parkedvehicle.NumberOfWheels,
+            ArrivalTime = parkedvehicle.ArrivalTime,
+
+            VehicleTypes = Enum.GetValues(typeof(VehicleType))
+                .Cast<VehicleType>()
+                .Select(v => new SelectListItem
+                {
+                    Text = v.GetDisplayName(),
+                    Value = v.ToString()
+                })
+        };
+
+        return View(vm);
     }
 
     // POST: PARKEDVEHICLES/Edit/5
@@ -112,23 +153,22 @@ public class ParkedVehiclesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ArrivalTime")] ParkedVehicle parkedvehicle)
+    public async Task<IActionResult> Edit(int? id, ParkedVehicleFormViewModel vm)
     {
-        if (id != parkedvehicle.Id)
+        if (id != vm.Id)
         {
             return NotFound();
         }
 
         // Hämta originalet från databasen
-        var original = await _context.ParkedVehicles.AsNoTracking()
-            .FirstOrDefaultAsync(v => v.Id == id);
+        var original = await _context.ParkedVehicles.FindAsync(id);
 
         if (original == null) { return NotFound(); }
 
         // Kontrollera endast om användaren ändrade registreringsnumret
-        if (original.RegistrationNumber != parkedvehicle.RegistrationNumber)
+        if (original.RegistrationNumber != vm.RegistrationNumber)
         {
-            bool regExists = await _context.ParkedVehicles.AnyAsync(v => v.RegistrationNumber == parkedvehicle.RegistrationNumber);
+            bool regExists = await _context.ParkedVehicles.AnyAsync(v => v.RegistrationNumber == vm.RegistrationNumber);
 
             if (regExists)
             {
@@ -140,23 +180,38 @@ public class ParkedVehiclesController : Controller
         {
             try
             {
-                _context.Update(parkedvehicle);
+                original.VehicleType = vm.VehicleType;
+                original.RegistrationNumber = vm.RegistrationNumber;
+                original.Color = vm.Color ?? string.Empty;
+                original.Brand = vm.Brand ?? string.Empty;
+                original.Model = vm.Model ?? string.Empty;
+                original.NumberOfWheels = vm.NumberOfWheels;
+
+                // _context.Update(original);
                 await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = $"Successfully saved changes to {vm.RegistrationNumber}.";
+
+                return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!ParkedVehicleExists(parkedvehicle.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
+                ModelState.AddModelError(string.Empty, "Could not save changes. Please check all fields.");
+                Console.WriteLine("DB ERROR: " + ex.Message);
             }
-            return RedirectToAction(nameof(Index));
         }
-        return View(parkedvehicle);
+
+        vm.VehicleTypes = Enum.GetValues(typeof(VehicleType))
+            .Cast<VehicleType>()
+            .Select(v => new SelectListItem
+            {
+                Text = v.GetDisplayName(),
+                Value = v.ToString()
+            });
+
+
+        return View(vm);
     }
 
     // GET: PARKEDVEHICLES/Delete/5
