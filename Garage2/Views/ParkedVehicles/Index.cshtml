@@ -1,71 +1,61 @@
-@model IEnumerable<Garage2.Models.Entities.ParkedVehicle>
-
-@{
-    ViewData["Title"] = "Index";
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="sv-flag-bar-rounded"></div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.VehicleType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RegistrationNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Color)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Model)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfWheels)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ArrivalTime)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.VehicleType)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.RegistrationNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Color)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Model)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.NumberOfWheels)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.ArrivalTime)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="sv-header mb-0">Overview</h1>
+        <a asp-action="Create" class="btn sv-btn-create">
+            + Park a Vehicle
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table sv-table align-middle">
+            <thead>
+                <tr>
+                    <th>Vehicle Type</th>
+                    <th>Registration Number</th>
+                    <th>Arrival Time</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><span class="sv-badge-sm">@Html.DisplayFor(modelItem => item.VehicleType)</span></td>
+                        <td><strong>@Html.DisplayFor(modelItem => item.RegistrationNumber)</strong></td>
+                        <td>@item.ArrivalTime.ToString("dd MMM yyyy, HH:mm")</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn sv-btn-details sv-action-btn">Details</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary sv-action-btn">Edit</a>
+                            <a asp-action="CheckOut" asp-route-id="@item.Id" class="btn btn-outline-danger sv-action-btn">Check Out</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <p class="text-muted text-center mt-4">No vehicles parked yet.</p>
+    }
+</div>
+
+<script>
+    const alertBox = document.getElementById("successAlert");
+    if (alertBox) {
+        setTimeout(() => {
+            alertBox.style.transition = "opacity 0.5s";
+            alertBox.style.opacity = "0";
+            setTimeout(() => alertBox.remove(), 500);
+        }, 3000);
+    }
+</script>
