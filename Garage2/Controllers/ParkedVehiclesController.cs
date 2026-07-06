@@ -5,8 +5,6 @@ using Garage2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Garage2.Models.Entities;
-using Garage2.Models.ViewModels;
 public class ParkedVehiclesController : Controller
 {
     private readonly Garage2Context _context;
