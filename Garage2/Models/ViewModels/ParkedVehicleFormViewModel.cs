@@ -31,9 +31,10 @@ namespace Garage2.Models.ViewModels
         [Display(Name = "Model (Max 40 Character)")]
         public string? Model { get; set; }
 
+        [Required(ErrorMessage = "Number of wheels is required.")]
         [Range(0, 18, ErrorMessage = "Number of wheels must be between 0 and 18.")]
         [Display(Name = "Number of Wheels")]
-        public int NumberOfWheels { get; set; }
+        public int? NumberOfWheels { get; set; }
 
         [Required]
         [Display(Name = "Vehicle Type")]
