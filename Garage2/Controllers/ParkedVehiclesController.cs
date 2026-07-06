@@ -1,7 +1,11 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Garage2.Models.Entities;
+using Garage2.Models.Enums;
+using Garage2.Models.ViewModels;
+using Garage2.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json;
 
 public class ParkedVehiclesController : Controller
 {
@@ -17,7 +21,17 @@ public class ParkedVehiclesController : Controller
     // GET: PARKEDVEHICLES
     public async Task<IActionResult> Index()
     {
-        return View(await _context.ParkedVehicle.ToListAsync());
+        var vehicles = await _context.ParkedVehicle
+            .Select(v => new ParkedVehicleOverviewViewModel
+            {
+                Id = v.Id,
+                VehicleType = v.VehicleType,
+                RegistrationNumber = v.RegistrationNumber,
+                ArrivalTime = v.ArrivalTime
+            })
+            .ToListAsync();
+
+        return View(vehicles);
     }
 
     // GET: PARKEDVEHICLES/Details/5
@@ -45,8 +59,6 @@ public class ParkedVehiclesController : Controller
     }
 
     // POST: PARKEDVEHICLES/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ArrivalTime")] ParkedVehicle parkedvehicle)
@@ -77,8 +89,6 @@ public class ParkedVehiclesController : Controller
     }
 
     // POST: PARKEDVEHICLES/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,Model,NumberOfWheels,ArrivalTime")] ParkedVehicle parkedvehicle)
@@ -88,16 +98,14 @@ public class ParkedVehiclesController : Controller
             return NotFound();
         }
 
-        // Hämta originalet från databasen
-        var original = await _context.ParkedVehicles.AsNoTracking()
+        var original = await _context.ParkedVehicle.AsNoTracking()
             .FirstOrDefaultAsync(v => v.Id == id);
 
         if (original == null) { return NotFound(); }
 
-        // Kontrollera endast om användaren ändrade registreringsnumret
         if (original.RegistrationNumber != parkedvehicle.RegistrationNumber)
         {
-            bool regExists = await _context.ParkedVehicles.AnyAsync(v => v.RegistrationNumber == parkedvehicle.RegistrationNumber);
+            bool regExists = await _context.ParkedVehicle.AnyAsync(v => v.RegistrationNumber == parkedvehicle.RegistrationNumber);
 
             if (regExists)
             {

@@ -1,3 +1,10 @@
+@model IEnumerable<Garage2.Models.ViewModels.ParkedVehicleOverviewViewModel>
+
+@{
+    ViewData["Title"] = "Overview";
+}
+
+
 @if (TempData["SuccessMessage"] != null)
 {
     <div id="successAlert" class="alert alert-success">
