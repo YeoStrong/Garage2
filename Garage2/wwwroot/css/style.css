@@ -53,8 +53,8 @@
 
 .garage-card {
     border: 2px solid var(--primary-color);
-    /* Swedish blue */
     border-radius: 10px;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
     padding: 20px;
     background-color: var(--background-color);
 }
@@ -69,4 +69,17 @@
 .garage-btn:hover {
     background-color: #00588A; /* darker Swedish blue */
     color: var(--secondary-color);
+}
+
+.parked-duration {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-secondary {
+    color: var(--secondary-color) !important;
 }
