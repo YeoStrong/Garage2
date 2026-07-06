@@ -3,10 +3,27 @@
     /* Swedish blue */
     --secondary-color: #FFCD00;
     /* Swedish yellow */
+    --secondary-color-soft: #FFE680;
     --background-color: #f7faff;
     /* Light background */
     --text-color: #212529;
     /* Bootstrap dark text */
+}
+
+.garage-brand {
+    color: var(--secondary-color) !important;
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+.garage-link {
+    color: var(--secondary-color) !important;
+    font-weight: 500;
+}
+
+.garage-link:hover {
+    color: var(--secondary-color-soft) !important;
+    text-decoration: none;
 }
 
 .readonly-field {
