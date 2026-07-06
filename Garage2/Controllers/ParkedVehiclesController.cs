@@ -260,6 +260,7 @@ public class ParkedVehiclesController : Controller
 
         DateTime checkOutTime = DateTime.Now;
 
+        // Create the receipt data that will be displayed after check out
         var receiptViewModel = new ReceiptViewModel
         {
             VehicleType = parkedvehicle.VehicleType.ToString(),
@@ -281,6 +282,8 @@ public class ParkedVehiclesController : Controller
         await _context.SaveChangesAsync();
 
         TempData["Receipt"] = JsonSerializer.Serialize(receiptViewModel);
+
+        TempData["SuccessMessage"] = $"Successfully checked out {receiptViewModel.RegistrationNumber}.";
 
         return RedirectToAction(nameof(Receipt));
     }

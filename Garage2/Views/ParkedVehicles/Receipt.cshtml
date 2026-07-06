@@ -4,6 +4,13 @@
     ViewData["Title"] = "Garage Receipt";
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="successAlert" class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
 <h1 class="mb-4">Garage Receipt</h1>
 
 <div class="card shadow-lg">
@@ -114,3 +121,9 @@
 </div>
 
 </div>
+
+@section Scripts {
+    <script>
+        fadeOutSuccessAlert();
+    </script>
+}
