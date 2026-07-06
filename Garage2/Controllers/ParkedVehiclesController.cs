@@ -6,6 +6,7 @@ using Garage2.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 public class ParkedVehiclesController : Controller
 {
@@ -282,7 +283,22 @@ public class ParkedVehiclesController : Controller
 
         await _context.SaveChangesAsync();
 
-        return View("Receipt", receiptViewModel);
+        //return View("Receipt", receiptViewModel);
+        TempData["Receipt"] = JsonSerializer.Serialize(receiptViewModel);
+
+        return RedirectToAction(nameof(Receipt));
+    }
+    // GET: PARKEDVEHICLES/Receipt
+    public IActionResult Receipt()
+    {
+        if (TempData["Receipt"] is not string json)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        var receipt = JsonSerializer.Deserialize<ReceiptViewModel>(json);
+
+        return View(receipt);
     }
 
     private bool ParkedVehicleExists(int? id)
