@@ -9,11 +9,15 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/sweden-theme.css" asp-append-version="true" />
+    <link rel="icon" type="image/png" href="~/img/garage-icon.png" />
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-dark sv-navbar mb-3">
-            <div class="container-fluid">
+            <div class="container">
+                <div class="d-flex align-items-center me-2">
+                    <img src="~/img/garage-icon.png" alt="Garage Icon" class="garage-icon">
+                </div>
                 <a class="navbar-brand sv-navbar-brand" asp-area="" asp-controller="ParkedVehicles" asp-action="Index">
                     Garage2
                 </a>
