@@ -90,16 +90,27 @@
 
     </div>
 
-    <div class="card-footer d-flex justify-content-between">
+<div class="card-footer d-flex justify-content-between">
 
-        <small class="text-muted">
-            Thank you for visiting Garage 2.0
-        </small>
+    <small class="text-muted">
+        Thank you for visiting Garage 2.0
+    </small>
 
-        <a asp-action="Index" class="btn btn-primary">
+    <div class="d-flex gap-2">
+
+        <button type="button"
+                class="btn btn-outline-secondary d-print-none"
+                onclick="window.print()">
+            Print Receipt
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-primary d-print-none">
             Back to Garage
         </a>
 
     </div>
+
+</div>
 
 </div>
