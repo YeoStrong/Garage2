@@ -257,8 +257,8 @@ public class ParkedVehiclesController : Controller
         // Save checkout information
         DateTime checkOutTime = DateTime.Now;
 
-        // Calculate parking duration
-        TimeSpan parkingDuration = checkOutTime - parkedvehicle.ArrivalTime;
+   
+       
         // Create the receipt data that will be displayed after check out
         var receiptViewModel = new ReceiptViewModel
         {
@@ -270,7 +270,7 @@ public class ParkedVehiclesController : Controller
             NumberOfWheels = parkedvehicle.NumberOfWheels,
             ArrivalTime = parkedvehicle.ArrivalTime,
             CheckOutTime = checkOutTime,
-            ParkingDuration = parkingDuration,
+          
             TotalPrice = 0
         };
 
