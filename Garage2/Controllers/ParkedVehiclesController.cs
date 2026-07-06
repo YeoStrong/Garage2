@@ -5,7 +5,8 @@ using Garage2.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-
+using Garage2.Models.Entities;
+using Garage2.Models.ViewModels;
 public class ParkedVehiclesController : Controller
 {
     private readonly Garage2Context _context;
@@ -214,8 +215,8 @@ public class ParkedVehiclesController : Controller
         return View(vm);
     }
 
-    // GET: PARKEDVEHICLES/Delete/5
-    public async Task<IActionResult> Delete(int? id)
+    // GET: PARKEDVEHICLES/CheckOut/5
+    public async Task<IActionResult> CheckOut(int? id)
     {
         if (id == null)
         {
@@ -232,19 +233,43 @@ public class ParkedVehiclesController : Controller
         return View(parkedvehicle);
     }
 
-    // POST: PARKEDVEHICLES/Delete/5
-    [HttpPost, ActionName("Delete")]
+    // POST: PARKEDVEHICLES/CheckOut/5
+    [HttpPost, ActionName("CheckOut")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
+    public async Task<IActionResult> CheckOutConfirmed(int? id)
     {
         var parkedvehicle = await _context.ParkedVehicle.FindAsync(id);
-        if (parkedvehicle != null)
+
+        if (parkedvehicle == null)
         {
-            _context.ParkedVehicle.Remove(parkedvehicle);
+            return NotFound();
         }
 
+        // Save checkout information
+        DateTime checkOutTime = DateTime.Now;
+
+        // Calculate parking duration
+        TimeSpan parkingDuration = checkOutTime - parkedvehicle.ArrivalTime;
+        // Create the receipt data that will be displayed after check out
+        var receiptViewModel = new ReceiptViewModel
+        {
+            VehicleType = parkedvehicle.VehicleType.ToString(),
+            RegistrationNumber = parkedvehicle.RegistrationNumber,
+            Brand = parkedvehicle.Brand,
+            Model = parkedvehicle.Model,
+            Color = parkedvehicle.Color,
+            NumberOfWheels = parkedvehicle.NumberOfWheels,
+            ArrivalTime = parkedvehicle.ArrivalTime,
+            CheckOutTime = checkOutTime,
+            ParkingDuration = parkingDuration,
+            TotalPrice = 0
+        };
+
+        _context.ParkedVehicle.Remove(parkedvehicle);
+
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+
+        return View("Receipt", receiptViewModel);
     }
 
     private bool ParkedVehicleExists(int? id)
