@@ -1,0 +1,61 @@
+@model Garage2.Models.ViewModels.CheckOutViewModel
+
+@{
+    ViewData["Title"] = "Check Out";
+}
+
+<h1 class="mb-3">Check Out Vehicle</h1>
+
+<h3 class="text-danger">
+    Are you sure you want to check out this vehicle?
+</h3>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+
+        <h4 class="mb-3">Vehicle Information</h4>
+        <hr />
+
+        <dl class="row">
+
+            <dt class="col-sm-3">
+                Vehicle Type
+            </dt>
+            <dd class="col-sm-9">
+                @Model.VehicleType
+            </dd>
+
+            <dt class="col-sm-3">
+                Registration Number
+            </dt>
+            <dd class="col-sm-9">
+                @Model.RegistrationNumber
+            </dd>
+
+            <dt class="col-sm-3">
+                Arrival Time
+            </dt>
+            <dd class="col-sm-9">
+                @Model.ArrivalTime.ToString("yyyy-MM-dd HH:mm")
+            </dd>
+
+        </dl>
+
+        <form asp-action="CheckOut">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mt-4 d-flex gap-2">
+                <input type="submit"
+                       value="Confirm Check Out"
+                       class="btn btn-danger" />
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+                    Back to Garage
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+</div>

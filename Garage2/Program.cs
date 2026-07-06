@@ -9,6 +9,7 @@ builder.Services.AddDbContext<Garage2Context>(options => options.UseSqlite("Data
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IVehicleHandler, VehicleHandler>();
+builder.Services.AddScoped<GarageFeeService>();
 
 var app = builder.Build();
 

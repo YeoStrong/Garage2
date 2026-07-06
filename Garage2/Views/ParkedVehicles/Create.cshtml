@@ -1,66 +1,52 @@
-@model Garage2.Models.Entities.ParkedVehicle
+@model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Check in";
 }
 
-<h1>Create</h1>
+<div class="container col-md-8">
+    <div class="col-md-8 mx-auto">
+        <div>
+            <a asp-action="Index" class="text-decoration-none text-muted small">&larr; Back to overview</a>
+        </div>
 
-<h4>ParkedVehicle</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="garage-header">
+            <h1>Check in</h1>
+            <p>Fill in the information for the vehicle you want to check in</p>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="VehicleType" class="control-label"></label>
-                <input asp-for="VehicleType" class="form-control" />
-                <span asp-validation-for="VehicleType" class="text-danger"></span>
-            </div>
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="garage-card">
+                    <div class="alert alert-info">
+                        <strong>Current Time (Check In Time):</strong> <span id="liveClock">Loading...</span>
+                    </div>
 
-            <div class="form-group">
-                <label asp-for="RegistrationNumber" class="control-label"></label>
-                <input asp-for="RegistrationNumber" class="form-control" />
-                <span asp-validation-for="RegistrationNumber" class="text-danger"></span>
-            </div>
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="Color" class="control-label"></label>
-                <input asp-for="Color" class="form-control" />
-                <span asp-validation-for="Color" class="text-danger"></span>
-            </div>
+                        <partial name="_VehicleForm" model="Model" />
 
-            <div class="form-group">
-                <label asp-for="Brand" class="control-label"></label>
-                <input asp-for="Brand" class="form-control" />
-                <span asp-validation-for="Brand" class="text-danger"></span>
-            </div>
+                        <div class="form-group mt-4 d-flex gap-4">
+                            <button type="submit" class="btn garage-btn w-50">Check In</button>
 
-            <div class="form-group">
-                <label asp-for="Model" class="control-label"></label>
-                <input asp-for="Model" class="form-control" />
-                <span asp-validation-for="Model" class="text-danger"></span>
+                            <a asp-action="Index" class="btn btn-secondary w-50">Cancel</a>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="NumberOfWheels" class="control-label"></label>
-                <input asp-for="NumberOfWheels" class="form-control" />
-                <span asp-validation-for="NumberOfWheels" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="ArrivalTime" class="control-label"></label>
-                <input asp-for="ArrivalTime" class="form-control" />
-                <span asp-validation-for="ArrivalTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        updateClock();
+        setInterval(updateClock, 1000);    
+    </script>
+}
