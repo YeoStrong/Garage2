@@ -1,3 +1,5 @@
+using Garage2.Models.Entities;
+using Garage2.Models.Enums;
 using Garage2.Services;
 using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
