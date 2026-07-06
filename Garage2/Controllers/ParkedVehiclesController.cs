@@ -50,9 +50,9 @@ public class ParkedVehiclesController : Controller
         viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
                                      .Cast<VehicleType>()
                                      .Select(v => new SelectListItem
-                                     {
-                                         Text = v.GetDisplayName(),
-                                         Value = v.ToString()
+                                    {
+                                        Text = v.GetDisplayName(),
+                                        Value = ((int)v).ToString()
                                      });
         return View(viewModel);
     }
@@ -102,14 +102,21 @@ public class ParkedVehiclesController : Controller
         }
 
         viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
-            .Cast<VehicleType>()
-            .Select(v => new SelectListItem
-            {
-                Text = v.GetDisplayName(),
-                Value = v.ToString()
-            });
+                                     .Cast<VehicleType>()
+                                     .Select(v => new SelectListItem
+                                     {
+                                         Text = v.ToString(),
+                                         Value = v.ToString()
+                                     });
 
         return View(viewModel);
+    }
+
+    [HttpGet]
+    public IActionResult CheckDuplicate(string registrationNumber)
+    {
+        bool isDuplicate = _context.ParkedVehicles.Any(v => v.RegistrationNumber == registrationNumber);
+        return Json(!isDuplicate);
     }
 
     // GET: PARKEDVEHICLES/Edit/5

@@ -1,5 +1,6 @@
 ﻿using Garage2.Models.Enums;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,6 +11,7 @@ namespace Garage2.Models.ViewModels
         public int? Id { get; set; } // null for Create, value for Edit
 
         [Required(ErrorMessage = "Registration Number is required.")]
+        [Remote(action: "CheckDuplicate", controller: "ParkedVehicles", ErrorMessage = "This registration number already exists!")]
         [Display(Name = "Registration Number")]
         public string RegistrationNumber { get; set; }
 
