@@ -225,12 +225,21 @@ public class ParkedVehiclesController : Controller
 
         var parkedvehicle = await _context.ParkedVehicle
             .FirstOrDefaultAsync(m => m.Id == id);
+
         if (parkedvehicle == null)
         {
             return NotFound();
         }
 
-        return View(parkedvehicle);
+        var viewModel = new CheckOutViewModel
+        {
+            Id = parkedvehicle.Id,
+            RegistrationNumber = parkedvehicle.RegistrationNumber,
+            VehicleType = parkedvehicle.VehicleType.ToString(),
+            ArrivalTime = parkedvehicle.ArrivalTime
+        };
+
+        return View(viewModel);
     }
 
     // POST: PARKEDVEHICLES/CheckOut/5
