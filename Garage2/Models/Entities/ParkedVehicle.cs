@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Garage2.Models.Enums;
+﻿using Garage2.Models.Enums;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Garage2.Models.Entities
 {
+    [Index(nameof(RegistrationNumber), IsUnique = true)]
     public class ParkedVehicle
     {
         public int Id { get; set; }

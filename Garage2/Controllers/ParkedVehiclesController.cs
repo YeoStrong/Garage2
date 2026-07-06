@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Garage2.Models.Entities;
 using Garage2.Models.Enums;
 using Garage2.Models.ViewModels;
 using Garage2.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 public class ParkedVehiclesController : Controller
@@ -21,9 +22,51 @@ public class ParkedVehiclesController : Controller
     }
 
     // GET: PARKEDVEHICLES
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string searchString, string sortOrder)
     {
-        var vehicles = await _context.ParkedVehicle
+        var vehicleQuery = _context.ParkedVehicle.AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            searchString = searchString.Trim();
+            vehicleQuery = vehicleQuery.Where(v => v.RegistrationNumber.ToLower().Contains(searchString.ToLower()) || 
+                                                   v.VehicleType.ToString().ToLower().Contains(searchString.ToLower())
+                                                   );
+        }
+
+        switch (sortOrder)
+        {
+            case "RegAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.RegistrationNumber);
+                break;
+
+            case "RegDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.RegistrationNumber);
+                break;
+
+            case "TypeAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.VehicleType);
+                break;
+
+            case "TypeDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.VehicleType);
+                break;
+
+            case "DateAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.ArrivalTime);
+                break;
+
+            case "DateDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.ArrivalTime);
+                break;
+
+            default:
+                vehicleQuery = vehicleQuery.OrderBy(v => v.RegistrationNumber);
+                break;
+
+        }
+
+        var vehicles = await vehicleQuery
             .Select(v => new ParkedVehicleOverviewViewModel
             {
                 Id = v.Id,
@@ -32,6 +75,13 @@ public class ParkedVehiclesController : Controller
                 ArrivalTime = v.ArrivalTime
             })
             .ToListAsync();
+
+        ViewData["CurrentFilter"] = searchString;
+
+        ViewData["RegSortParm"] = (string.IsNullOrEmpty(sortOrder) || sortOrder == "RegAsc") ? "RegDesc" : "RegAsc";
+        ViewData["TypeSortParm"] = sortOrder == "TypeAsc" ? "TypeDesc" : "TypeAsc";
+        ViewData["DateSortParm"] = sortOrder == "DateAsc" ? "DateDesc" : "DateAsc";
+        ViewData["CurrentSort"] = sortOrder;
 
         return View(vehicles);
     }
@@ -62,9 +112,9 @@ public class ParkedVehiclesController : Controller
         viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
                                      .Cast<VehicleType>()
                                      .Select(v => new SelectListItem
-                                     {
-                                         Text = v.GetDisplayName(),
-                                         Value = v.ToString()
+                                    {
+                                        Text = v.GetDisplayName(),
+                                        Value = ((int)v).ToString()
                                      });
         return View(viewModel);
     }
@@ -92,7 +142,7 @@ public class ParkedVehiclesController : Controller
                     Color = viewModel.Color ?? string.Empty,
                     Brand = viewModel.Brand ?? string.Empty,
                     Model = viewModel.Model ?? string.Empty,
-                    NumberOfWheels = viewModel.NumberOfWheels,
+                    NumberOfWheels = viewModel.NumberOfWheels.Value,
                     ArrivalTime = DateTime.Now
                 };
 
@@ -111,14 +161,21 @@ public class ParkedVehiclesController : Controller
         }
 
         viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
-            .Cast<VehicleType>()
-            .Select(v => new SelectListItem
-            {
-                Text = v.GetDisplayName(),
-                Value = v.ToString()
-            });
+                                     .Cast<VehicleType>()
+                                     .Select(v => new SelectListItem
+                                     {
+                                         Text = v.ToString(),
+                                         Value = v.ToString()
+                                     });
 
         return View(viewModel);
+    }
+
+    [HttpGet]
+    public IActionResult CheckDuplicate(string registrationNumber)
+    {
+        bool isDuplicate = _context.ParkedVehicles.Any(v => v.RegistrationNumber == registrationNumber);
+        return Json(!isDuplicate);
     }
 
     // GET: PARKEDVEHICLES/Edit/5
@@ -192,7 +249,7 @@ public class ParkedVehiclesController : Controller
                 original.Color = vm.Color ?? string.Empty;
                 original.Brand = vm.Brand ?? string.Empty;
                 original.Model = vm.Model ?? string.Empty;
-                original.NumberOfWheels = vm.NumberOfWheels;
+                original.NumberOfWheels = vm.NumberOfWheels.Value;
 
                 _context.Update(original);
                 await _context.SaveChangesAsync();
