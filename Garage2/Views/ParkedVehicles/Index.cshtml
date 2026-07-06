@@ -24,10 +24,20 @@
     <form asp-action="Index" method="get" class="mb-4">
         <div class="input-group" style="max-width: 400px;">
             <input type="text"
+                   id="searchBox"
                    name="searchString"
                    class="form-control"
                    placeholder="Search with Registration Number"
-                   value="@Context.Request.Query["searchString"]" /> <button type="submit" class="btn btn-primary">Sök</button>
+                   value="@Context.Request.Query["searchString"]"
+                   autofocus /> <button type="submit" class="btn sv-btn-create">Search</button>
+
+            @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string))
+            {
+                <a asp-action="Index"
+                   class="btn sv-badge-sm text-dark py-0 d-inline-flex align-items-center fs-6">
+                    Clear
+                </a>
+            }
         </div>
     </form>
 
@@ -85,5 +95,14 @@
 @section Scripts {
     <script>
         fadeOutSuccessAlert();
+
+        const searchBox = document.getElementById('searchBox');
+        if (searchBox) 
+        {
+            searchBox.focus();
+            const val = searchBox.value;
+            searchBox.value = '';
+            searchBox.value = val;
+        }
     </script>
 }

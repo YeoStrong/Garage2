@@ -27,6 +27,7 @@ public class ParkedVehiclesController : Controller
 
         if (!string.IsNullOrEmpty(searchString))
         {
+            searchString = searchString.Trim();
             vehicleQuery = vehicleQuery.Where(v => v.RegistrationNumber.ToLower().Contains(searchString.ToLower()));
         }
 
