@@ -35,3 +35,15 @@ function getParkedDuration(arrivalTimeString) {
 
     return `${days} d ${hours} h ${minutes} m`;
 }
+
+function fadeOutSuccessAlert() {
+    const alertBox = document.getElementById("successAlert");
+    if (!alertBox) return;
+
+    setTimeout(() => {
+        alertBox.style.transition = "opacity 0.5s";
+        alertBox.style.opacity = "0";
+
+        setTimeout(() => alertBox.remove(), 500);
+    }, 3000);
+}
