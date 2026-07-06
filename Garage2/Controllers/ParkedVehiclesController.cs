@@ -2,20 +2,22 @@
 using Garage2.Models.Entities;
 using Garage2.Models.Enums;
 using Garage2.Models.ViewModels;
+using Garage2.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Garage2.Models.Entities;
-using Garage2.Models.ViewModels;
+
 public class ParkedVehiclesController : Controller
 {
     private readonly Garage2Context _context;
     private readonly IVehicleHandler _vehicleHandler;
+    private readonly GarageFeeService _garageFeeService;
 
-    public ParkedVehiclesController(Garage2Context context, IVehicleHandler vehicleHandler)
+    public ParkedVehiclesController(Garage2Context context, IVehicleHandler vehicleHandler, GarageFeeService garageFeeService)
     {
         _context = context;
         _vehicleHandler = vehicleHandler;
+        _garageFeeService = garageFeeService;
     }
 
     // GET: PARKEDVEHICLES
@@ -270,8 +272,10 @@ public class ParkedVehiclesController : Controller
             NumberOfWheels = parkedvehicle.NumberOfWheels,
             ArrivalTime = parkedvehicle.ArrivalTime,
             CheckOutTime = checkOutTime,
-          
-            TotalPrice = 0
+
+            TotalPrice = _garageFeeService.CalculateFee(
+                parkedvehicle.ArrivalTime,
+                checkOutTime)
         };
 
         _context.ParkedVehicle.Remove(parkedvehicle);
