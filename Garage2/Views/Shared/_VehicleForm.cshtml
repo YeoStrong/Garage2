@@ -1,14 +1,5 @@
 ﻿@model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
 
-@if (Model.ArrivalTime != default(DateTime))
-{
-    <div class="form-group mb-3">
-        <div class="alert alert-info">
-            <strong>Check In Time:</strong>
-            <span>@Model.ArrivalTime.ToString("dddd, yyyy-MM-dd HH:mm")</span>
-        </div>
-    </div>
-}
 
 <div class="form-group mb-3">
     <label asp-for="RegistrationNumber" class="control-label"></label>

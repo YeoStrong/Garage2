@@ -1,5 +1,4 @@
-using Garage2.Models.Entities;
-using Garage2.Models.Enums;
+using Garage2.Services;
 using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Garage2Context") ?? throw new InvalidOperationException("Connection string 'Garage2Context' not found.");
@@ -10,6 +9,7 @@ builder.Services.AddDbContext<Garage2Context>(options => options.UseSqlite("Data
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IVehicleHandler, VehicleHandler>();
+builder.Services.AddScoped<GarageFeeService>();
 
 var app = builder.Build();
 

@@ -7,7 +7,7 @@
 <div class="container col-md-8">
     <div class="col-md-8 mx-auto">
         <div>
-            <a asp-action="Index" class="text-decoration-none text-muted small">&larr; Back to overview</a>
+            <a asp-action="Index" class="sv-back-link small">&larr; Back to overview</a>
         </div>
 
         <div class="garage-header">
@@ -20,6 +20,23 @@
                 <div class="garage-card">
                     <form asp-action="Edit">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-group mb-3">
+                            <div class="alert alert-info">
+                                <strong>Check In Time:</strong>
+                                <span>@Model.ArrivalTime.ToString("dddd, yyyy-MM-dd HH:mm")</span>
+
+                                <br />
+
+                                <div class="parked-duration">
+                                    <strong>Parked Duration: </strong>
+                                    <span id="parkedDuration"></span>
+
+                                    <input type="hidden" id="arrivalTimeValue"
+                                        value="@Model.ArrivalTime.ToString("yyyy-MM-ddTHH:mm:ss")" />
+                                </div>
+                            </div>
+                        </div>
 
                         <partial name="_VehicleForm" model="Model" />
 

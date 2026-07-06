@@ -1,17 +1,20 @@
 using Microsoft.EntityFrameworkCore;
 using Garage2.Models.Entities;
 
-public class VehicleHandler : IVehicleHandler
+namespace Garage2.Services
 {
-    private readonly Garage2Context _context;
-
-    public VehicleHandler(Garage2Context context)
+    public class VehicleHandler : IVehicleHandler
     {
-        _context = context;
-    }
+        private readonly Garage2Context _context;
 
-    public bool IsExisting(string regNumber)
-    {
-        return _context.ParkedVehicles.Any(v => v.RegistrationNumber == regNumber);
+        public VehicleHandler(Garage2Context context)
+        {
+            _context = context;
+        }
+
+        public bool IsExisting(string regNumber)
+        {
+            return _context.ParkedVehicle.Any(v => v.RegistrationNumber == regNumber);
+        }
     }
 }

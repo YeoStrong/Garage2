@@ -3,10 +3,34 @@
     /* Swedish blue */
     --secondary-color: #FFCD00;
     /* Swedish yellow */
+    --secondary-color-soft: #FFE680;
     --background-color: #f7faff;
     /* Light background */
     --text-color: #212529;
     /* Bootstrap dark text */
+}
+
+.garage-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.garage-brand {
+    color: var(--secondary-color) !important;
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+.garage-link {
+    color: var(--secondary-color) !important;
+    font-weight: 500;
+}
+
+.garage-link:hover {
+    color: var(--secondary-color-soft) !important;
+    text-decoration: none;
 }
 
 .readonly-field {
@@ -29,8 +53,8 @@
 
 .garage-card {
     border: 2px solid var(--primary-color);
-    /* Swedish blue */
     border-radius: 10px;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
     padding: 20px;
     background-color: var(--background-color);
 }
@@ -45,4 +69,17 @@
 .garage-btn:hover {
     background-color: #00588A; /* darker Swedish blue */
     color: var(--secondary-color);
+}
+
+.parked-duration {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-secondary {
+    color: var(--secondary-color) !important;
 }

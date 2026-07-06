@@ -3,27 +3,35 @@
 @{
     ViewData["Title"] = "Vehicle Details";
 
-    var badgeColor = Model.VehicleType switch
+    var (badgeColor, badgeIcon) = Model.VehicleType switch
     {
-        Garage2.Models.Enums.VehicleType.Car => "primary",
-        Garage2.Models.Enums.VehicleType.Motorcycle => "warning",
-        Garage2.Models.Enums.VehicleType.Truck => "dark",
-        Garage2.Models.Enums.VehicleType.Bus => "success",
-        _ => "secondary"
+        Garage2.Models.Enums.VehicleType.Car => ("#006AA7", "🚗"),
+        Garage2.Models.Enums.VehicleType.Motorcycle => ("#FECC02", "🏍️"),
+        Garage2.Models.Enums.VehicleType.Truck => ("#2c3e50", "🚚"),
+        Garage2.Models.Enums.VehicleType.Bus => ("#1a7a4c", "🚌"),
+        Garage2.Models.Enums.VehicleType.Boat => ("#0891b2", "🚤"),
+        Garage2.Models.Enums.VehicleType.Airplane => ("#6b7280", "✈️"),
+        _ => ("#6c757d", "🚙")
     };
+
+    var badgeTextColor = Model.VehicleType == Garage2.Models.Enums.VehicleType.Motorcycle
+        ? "#1a1a1a" : "#ffffff";
 }
 
 <div class="container mt-4">
-    <a asp-action="Index" class="text-decoration-none text-muted small">&larr; Back to overview</a>
+    <a asp-action="Index" class="sv-back-link small">&larr; Back to overview</a>
 
-    <div class="card shadow-sm mt-3" style="max-width: 480px; border-radius: 12px;">
+    <div class="card sv-card mt-3">
+        <div class="sv-flag-bar"></div>
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <h4 class="mb-1">@Model.RegistrationNumber</h4>
-                    <span class="badge bg-@badgeColor">@Model.VehicleType</span>
+                    <h4 class="mb-2">@Model.RegistrationNumber</h4>
+                    <span class="sv-badge" style="background-color:@badgeColor; color:@badgeTextColor;">
+                        @badgeIcon @Model.VehicleType
+                    </span>
                 </div>
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm sv-btn-primary">
                     Edit
                 </a>
             </div>
@@ -31,19 +39,19 @@
             <hr class="my-3" />
 
             <dl class="row mb-0 gy-2">
-                <dt class="col-5 text-muted fw-normal">Color</dt>
+                <dt class="col-5 sv-label">Color</dt>
                 <dd class="col-7 mb-0">@Model.Color</dd>
 
-                <dt class="col-5 text-muted fw-normal">Brand</dt>
+                <dt class="col-5 sv-label">Brand</dt>
                 <dd class="col-7 mb-0">@Model.Brand</dd>
 
-                <dt class="col-5 text-muted fw-normal">Model</dt>
+                <dt class="col-5 sv-label">Model</dt>
                 <dd class="col-7 mb-0">@Model.Model</dd>
 
-                <dt class="col-5 text-muted fw-normal">Wheels</dt>
+                <dt class="col-5 sv-label">Wheels</dt>
                 <dd class="col-7 mb-0">@Model.NumberOfWheels</dd>
 
-                <dt class="col-5 text-muted fw-normal">Arrived</dt>
+                <dt class="col-5 sv-label">Arrived</dt>
                 <dd class="col-7 mb-0">@Model.ArrivalTime.ToString("dd MMM yyyy, HH:mm")</dd>
             </dl>
         </div>
