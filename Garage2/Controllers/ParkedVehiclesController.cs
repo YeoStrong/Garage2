@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Garage2.Models.Entities;
 using Garage2.Models.Enums;
 using Garage2.Models.ViewModels;
 using Garage2.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 public class ParkedVehiclesController : Controller
@@ -21,14 +22,48 @@ public class ParkedVehiclesController : Controller
     }
 
     // GET: PARKEDVEHICLES
-    public async Task<IActionResult> Index(string searchString)
+    public async Task<IActionResult> Index(string searchString, string sortOrder)
     {
         var vehicleQuery = _context.ParkedVehicle.AsQueryable();
 
         if (!string.IsNullOrEmpty(searchString))
         {
             searchString = searchString.Trim();
-            vehicleQuery = vehicleQuery.Where(v => v.RegistrationNumber.ToLower().Contains(searchString.ToLower()));
+            vehicleQuery = vehicleQuery.Where(v => v.RegistrationNumber.ToLower().Contains(searchString.ToLower()) || 
+                                                   v.VehicleType.ToString().ToLower().Contains(searchString.ToLower())
+                                                   );
+        }
+
+        switch (sortOrder)
+        {
+            case "RegAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.RegistrationNumber);
+                break;
+
+            case "RegDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.RegistrationNumber);
+                break;
+
+            case "TypeAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.VehicleType);
+                break;
+
+            case "TypeDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.VehicleType);
+                break;
+
+            case "DateAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.ArrivalTime);
+                break;
+
+            case "DateDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.ArrivalTime);
+                break;
+
+            default:
+                vehicleQuery = vehicleQuery.OrderBy(v => v.RegistrationNumber);
+                break;
+
         }
 
         var vehicles = await vehicleQuery
@@ -42,6 +77,11 @@ public class ParkedVehiclesController : Controller
             .ToListAsync();
 
         ViewData["CurrentFilter"] = searchString;
+
+        ViewData["RegSortParm"] = (string.IsNullOrEmpty(sortOrder) || sortOrder == "RegAsc") ? "RegDesc" : "RegAsc";
+        ViewData["TypeSortParm"] = sortOrder == "TypeAsc" ? "TypeDesc" : "TypeAsc";
+        ViewData["DateSortParm"] = sortOrder == "DateAsc" ? "DateDesc" : "DateAsc";
+        ViewData["CurrentSort"] = sortOrder;
 
         return View(vehicles);
     }

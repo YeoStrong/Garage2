@@ -66,9 +66,60 @@
             <table class="table sv-table align-middle">
                 <thead>
                     <tr>
-                        <th>Vehicle Type</th>
-                        <th>Registration Number</th>
-                        <th>Arrival Time</th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewData["TypeSortParm"]"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="text-decoration-none text-white fw-bold">
+                                Vehicle Type
+                                @if (ViewData["CurrentSort"]?.ToString() == "TypeAsc")
+                                {
+                                    <span>▲</span>
+                                }
+                                else if (ViewData["CurrentSort"]?.ToString() == "TypeDesc")
+                                {
+
+                                    <span>▼</span>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewData["RegSortParm"]"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="text-decoration-none text-white fw-bold">
+                                Registration Number
+                                @if (ViewData["CurrentSort"]?.ToString() == "RegAsc")
+                                {
+                                    <span>▲</span>
+                                }
+                                else if (ViewData["CurrentSort"]?.ToString() == "RegDesc")
+                                {
+
+                                    <span>▼</span>
+                                }
+                                else if (string.IsNullOrEmpty(ViewData["CurrentSort"] as string))
+                                {
+                                    <span>▲</span>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewData["DateSortParm"]"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="text-decoration-none text-white fw-bold">
+                                Arrival Time
+                                @if (ViewData["CurrentSort"]?.ToString() == "DateAsc")
+                                {
+                                    <span>▲</span>
+                                }
+                                else if (ViewData["CurrentSort"]?.ToString() == "DateDesc")
+                                {
+                                    <span>▼</span>
+                                }
+                            </a>
+                        </th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
