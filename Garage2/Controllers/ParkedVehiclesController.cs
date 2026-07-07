@@ -181,9 +181,12 @@ public class ParkedVehiclesController : Controller
     }
 
     [HttpGet]
-    public IActionResult CheckDuplicate(string registrationNumber)
+    public IActionResult CheckDuplicate(string registrationNumber, int? id)
     {
-        bool isDuplicate = _context.ParkedVehicles.Any(v => v.RegistrationNumber == registrationNumber);
+        // If editing, we don't want to check for duplicates against the same record
+        bool isDuplicate = id.HasValue
+            ? false
+            : _context.ParkedVehicles.Any(v => v.RegistrationNumber == registrationNumber);
         return Json(!isDuplicate);
     }
 
@@ -365,10 +368,5 @@ public class ParkedVehiclesController : Controller
         var receipt = JsonSerializer.Deserialize<ReceiptViewModel>(json);
 
         return View(receipt);
-    }
-
-    private bool ParkedVehicleExists(int? id)
-    {
-        return _context.ParkedVehicle.Any(e => e.Id == id);
     }
 }
