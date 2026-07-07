@@ -60,6 +60,14 @@ public class ParkedVehiclesController : Controller
                 vehicleQuery = vehicleQuery.OrderByDescending(v => v.ArrivalTime);
                 break;
 
+            case "DurationAsc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.ArrivalTime);
+                break;
+
+            case "DurationDesc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.ArrivalTime);
+                break;
+
             default:
                 vehicleQuery = vehicleQuery.OrderBy(v => v.RegistrationNumber);
                 break;
@@ -81,6 +89,7 @@ public class ParkedVehiclesController : Controller
         ViewData["RegSortParm"] = (string.IsNullOrEmpty(sortOrder) || sortOrder == "RegAsc") ? "RegDesc" : "RegAsc";
         ViewData["TypeSortParm"] = sortOrder == "TypeAsc" ? "TypeDesc" : "TypeAsc";
         ViewData["DateSortParm"] = sortOrder == "DateAsc" ? "DateDesc" : "DateAsc";
+        ViewData["DurationSortParm"] = sortOrder == "DurationAsc" ? "DurationDesc" : "DurationAsc";
         ViewData["CurrentSort"] = sortOrder;
 
         return View(vehicles);
@@ -172,9 +181,12 @@ public class ParkedVehiclesController : Controller
     }
 
     [HttpGet]
-    public IActionResult CheckDuplicate(string registrationNumber)
+    public IActionResult CheckDuplicate(string registrationNumber, int? id)
     {
-        bool isDuplicate = _context.ParkedVehicles.Any(v => v.RegistrationNumber == registrationNumber);
+        // If editing, we don't want to check for duplicates against the same record
+        bool isDuplicate = id.HasValue
+            ? false
+            : _context.ParkedVehicles.Any(v => v.RegistrationNumber == registrationNumber);
         return Json(!isDuplicate);
     }
 
@@ -356,10 +368,5 @@ public class ParkedVehiclesController : Controller
         var receipt = JsonSerializer.Deserialize<ReceiptViewModel>(json);
 
         return View(receipt);
-    }
-
-    private bool ParkedVehicleExists(int? id)
-    {
-        return _context.ParkedVehicle.Any(e => e.Id == id);
     }
 }

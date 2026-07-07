@@ -28,7 +28,7 @@
                 <div>
                     <h4 class="mb-2">@Model.RegistrationNumber</h4>
                     <span class="sv-badge" style="background-color:@badgeColor; color:@badgeTextColor;">
-                        @badgeIcon @Model.VehicleType
+                        @Model.VehicleType.GetDisplayName()
                     </span>
                 </div>
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm sv-btn-primary">

@@ -1,15 +1,27 @@
 ﻿/* Sweden-themed styling for Garage2 */
 
+:root {
+    --primary-color: #006AA7;
+    /* Swedish blue */
+    --secondary-color: #FFCD00;
+    /* Swedish yellow */
+    --secondary-color-soft: #FFE680;
+    --background-color: #f7faff;
+    /* Light background */
+    --text-color: #fff;
+    /* Bootstrap dark text */
+}
+
 .sv-flag-bar {
     height: 6px;
-    background: linear-gradient(90deg, #006AA7 0%, #006AA7 45%, #FECC02 45%, #FECC02 55%, #006AA7 55%, #006AA7 100%);
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 45%, #FECC02 45%, #FECC02 55%, var(--primary-color) 55%, var(--primary-color) 100%);
 }
 
 .sv-flag-bar-rounded {
     height: 6px;
     border-radius: 4px;
     margin-bottom: 20px;
-    background: linear-gradient(90deg, #006AA7 0%, #006AA7 45%, #FECC02 45%, #FECC02 55%, #006AA7 55%, #006AA7 100%);
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 45%, #FECC02 45%, #FECC02 55%, var(--primary-color) 55%, var(--primary-color) 100%);
 }
 
 .sv-card {
@@ -39,7 +51,7 @@
 }
 
 .sv-back-link {
-    color: #006AA7;
+    color: var(--primary-color);
     font-weight: 500;
     text-decoration: none;
 }
@@ -49,8 +61,8 @@
     }
 
 .sv-btn-primary, .sv-btn-create {
-    background-color: #006AA7;
-    border-color: #006AA7;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
     color: #fff;
 }
 
@@ -61,14 +73,14 @@
     }
 
 .sv-btn-details {
-    color: #006AA7;
-    border-color: #006AA7;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
     background-color: transparent;
 }
 
     .sv-btn-details:hover {
-        background-color: #006AA7;
-        border-color: #006AA7;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
         color: #fff;
     }
 
@@ -78,10 +90,10 @@
 }
 
 .sv-table thead {
-    --bs-table-bg: #006AA7;
+    --bs-table-bg: var(--primary-color);
     --bs-table-color: #fff;
-    --bs-table-border-color: #006AA7;
-    background-color: #006AA7;
+    --bs-table-border-color: var(--primary-color);
+    background-color: var(--primary-color);
 }
 
     .sv-table thead th {
@@ -118,21 +130,25 @@
 }
 
 .sv-navbar {
-    background-color: #006AA7;
+    background-color: var(--primary-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sv-navbar-brand {
-    font-weight: 700;
-    font-size: 1.3rem;
-    color: #fff !important;
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: var(--text-color) !important;
+}
+
+.sv-navbar-brand:hover {
+    color: var(--secondary-color-soft) !important;
 }
 
 .sv-nav-link {
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: var(--text-color) !important;
     font-weight: 500;
 }
 
-    .sv-nav-link:hover {
-        color: #FECC02 !important;
-    }
+.sv-nav-link:hover {
+    color: var(--secondary-color-soft) !important;
+}

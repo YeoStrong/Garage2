@@ -11,7 +11,10 @@ namespace Garage2.Models.ViewModels
         public int? Id { get; set; } // null for Create, value for Edit
 
         [Required(ErrorMessage = "Registration Number is required.")]
-        [Remote(action: "CheckDuplicate", controller: "ParkedVehicles", ErrorMessage = "This registration number already exists!")]
+        [Remote(action: "CheckDuplicate", 
+            controller: "ParkedVehicles", 
+            AdditionalFields = nameof(Id), 
+            ErrorMessage = "This registration number already exists!")]
         [Display(Name = "Registration Number")]
         public string RegistrationNumber { get; set; }
 
