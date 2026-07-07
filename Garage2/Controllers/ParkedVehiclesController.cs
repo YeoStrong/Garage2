@@ -103,7 +103,7 @@ public class ParkedVehiclesController : Controller
             return NotFound();
         }
 
-        var parkedvehicle = await _context.ParkedVehicle
+        var parkedvehicle = await _context.ParkedVehicle.AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
         if (parkedvehicle == null)
         {
@@ -296,7 +296,7 @@ public class ParkedVehiclesController : Controller
             return NotFound();
         }
 
-        var parkedvehicle = await _context.ParkedVehicle
+        var parkedvehicle = await _context.ParkedVehicle.AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
 
         if (parkedvehicle == null)
@@ -304,15 +304,15 @@ public class ParkedVehiclesController : Controller
             return NotFound();
         }
 
-        var viewModel = new CheckOutViewModel
+        /* var viewModel = new CheckOutViewModel
         {
             Id = parkedvehicle.Id,
             RegistrationNumber = parkedvehicle.RegistrationNumber,
             VehicleType = parkedvehicle.VehicleType.ToString(),
             ArrivalTime = parkedvehicle.ArrivalTime
-        };
+        }; */
 
-        return View(viewModel);
+        return View(parkedvehicle);
     }
 
     // POST: PARKEDVEHICLES/CheckOut/5

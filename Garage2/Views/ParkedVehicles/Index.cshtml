@@ -69,7 +69,7 @@
                             <a asp-action="Index"
                                asp-route-sortOrder="@ViewData["TypeSortParm"]"
                                asp-route-searchString="@ViewData["CurrentFilter"]"
-                               class="text-decoration-none text-white fw-bold">
+                               class="sv-nav-link">
                                 Vehicle Type
                                 @if (ViewData["CurrentSort"]?.ToString() == "TypeAsc")
                                 {
@@ -86,7 +86,7 @@
                             <a asp-action="Index"
                                asp-route-sortOrder="@ViewData["RegSortParm"]"
                                asp-route-searchString="@ViewData["CurrentFilter"]"
-                               class="text-decoration-none text-white fw-bold">
+                               class="sv-nav-link">
                                 Registration Number
                                 @if (ViewData["CurrentSort"]?.ToString() == "RegAsc")
                                 {
@@ -107,7 +107,7 @@
                             <a asp-action="Index"
                                asp-route-sortOrder="@ViewData["DateSortParm"]"
                                asp-route-searchString="@ViewData["CurrentFilter"]"
-                               class="text-decoration-none text-white fw-bold">
+                               class="sv-nav-link">
                                 Arrival Time
                                 @if (ViewData["CurrentSort"]?.ToString() == "DateAsc")
                                 {
@@ -123,7 +123,7 @@
                             <a asp-action="Index"
                                asp-route-sortOrder="@ViewData["DurationSortParm"]"
                                asp-route-searchString="@ViewData["CurrentFilter"]"
-                               class="text-decoration-none text-white fw-bold">
+                               class="sv-nav-link">
                                 Parked Duration
                                 @if (ViewData["CurrentSort"]?.ToString() == "DurationAsc")
                                 {
@@ -135,21 +135,21 @@
                                 }
                             </a>
                         </th>
-                        <th class="text-end">Actions</th>
+                        <th class="text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td><span class="sv-badge-sm">@Html.DisplayFor(modelItem => item.VehicleType)</span></td>
+                            <td><span>@Html.DisplayFor(modelItem => item.VehicleType)</span></td>
                             <td><strong>@Html.DisplayFor(modelItem => item.RegistrationNumber)</strong></td>
                             <td>@item.ArrivalTime.ToString("dd MMM yyyy, HH:mm")</td>
                             <td data-arrival-time='@item.ArrivalTime.ToString("yyyy-MM-ddTHH:mm:ss")' class="duration-cell"></td>
                             <td class="text-end">
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn sv-btn-details sv-action-btn">Details</a>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn sv-btn-details sv-action-btn">Update</a>
-                                <a asp-action="CheckOut" asp-route-id="@item.Id" class="btn btn-outline-danger sv-action-btn">Check Out</a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn sv-btn-details sv-action-btn w-sm-auto">Details</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn sv-btn-details sv-action-btn w-sm-auto">Update</a>
+                                <a asp-action="CheckOut" asp-route-id="@item.Id" class="btn btn-outline-danger sv-action-btn w-sm-auto">Check Out</a>
                             </td>
                         </tr>
                     }

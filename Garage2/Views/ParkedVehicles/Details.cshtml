@@ -3,57 +3,73 @@
 @{
     ViewData["Title"] = "Vehicle Details";
 
-    var (badgeColor, badgeIcon) = Model.VehicleType switch
-    {
-        Garage2.Models.Enums.VehicleType.Car => ("#006AA7", "🚗"),
-        Garage2.Models.Enums.VehicleType.Motorcycle => ("#FECC02", "🏍️"),
-        Garage2.Models.Enums.VehicleType.Truck => ("#2c3e50", "🚚"),
-        Garage2.Models.Enums.VehicleType.Bus => ("#1a7a4c", "🚌"),
-        Garage2.Models.Enums.VehicleType.Boat => ("#0891b2", "🚤"),
-        Garage2.Models.Enums.VehicleType.Airplane => ("#6b7280", "✈️"),
-        _ => ("#6c757d", "🚙")
-    };
+    var badgeColor = VehicleTypeBadgeHelper.GetBadgeColor(Model.VehicleType);
 
-    var badgeTextColor = Model.VehicleType == Garage2.Models.Enums.VehicleType.Motorcycle
-        ? "#1a1a1a" : "#ffffff";
+    var badgeTextColor = VehicleTypeBadgeHelper.GetBadgeTextColor(Model.VehicleType);
 }
 
-<div class="container mt-4">
+<div class="container">
+    <div class="col-md-8 mx-auto">
     <a asp-action="Index" class="sv-back-link small">&larr; Back to overview</a>
 
-    <div class="card sv-card mt-3">
-        <div class="sv-flag-bar"></div>
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h4 class="mb-2">@Model.RegistrationNumber</h4>
-                    <span class="sv-badge" style="background-color:@badgeColor; color:@badgeTextColor;">
-                        @Model.VehicleType.GetDisplayName()
-                    </span>
+    <div class="garage-header">
+        <h3>Parked Vehicle Details</h3>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card sv-card mt-3">
+                <div class="sv-flag-bar"></div>
+
+                <div class="card-body p-4">
+                    @Html.HiddenFor(m => m.Id)
+                    @Html.HiddenFor(m => m.ArrivalTime)
+
+                    <div class="alert alert-info">
+                        <div class="mb-2">
+                            <strong>Checked In Time:</strong>
+                            <span>@Model.ArrivalTime.ToString("dddd, yyyy-MM-dd HH:mm")</span>
+                        </div>
+
+                        <div class="parked-duration">
+                            <strong>Parked Duration: </strong>
+                            <span class="duration-cell"
+                                  data-arrival-time='@Model.ArrivalTime.ToString("yyyy-MM-ddTHH:mm:ss")'>
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-3"/>
+
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h4 class="m-2 mt-0">@Model.RegistrationNumber</h4>
+                            <span class="sv-badge" style="background-color:@badgeColor; color:@badgeTextColor;">
+                                @Model.VehicleType.GetDisplayName()
+                            </span>
+                        </div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn sv-btn-details w-25">
+                            Edit
+                        </a>
+                    </div>
+
+                    <dl class="row mb-0 gy-2">
+                        <dt class="col-5 sv-label">Color</dt>
+                        <dd class="col-7 mb-0">@Model.Color</dd>
+
+                        <dt class="col-5 sv-label">Brand</dt>
+                        <dd class="col-7 mb-0">@Model.Brand</dd>
+
+                        <dt class="col-5 sv-label">Model</dt>
+                        <dd class="col-7 mb-0">@Model.Model</dd>
+
+                        <dt class="col-5 sv-label">Wheels</dt>
+                        <dd class="col-7 mb-0">@Model.NumberOfWheels</dd>
+                    </dl>
                 </div>
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm sv-btn-primary">
-                    Edit
-                </a>
             </div>
-
-            <hr class="my-3" />
-
-            <dl class="row mb-0 gy-2">
-                <dt class="col-5 sv-label">Color</dt>
-                <dd class="col-7 mb-0">@Model.Color</dd>
-
-                <dt class="col-5 sv-label">Brand</dt>
-                <dd class="col-7 mb-0">@Model.Brand</dd>
-
-                <dt class="col-5 sv-label">Model</dt>
-                <dd class="col-7 mb-0">@Model.Model</dd>
-
-                <dt class="col-5 sv-label">Wheels</dt>
-                <dd class="col-7 mb-0">@Model.NumberOfWheels</dd>
-
-                <dt class="col-5 sv-label">Arrived</dt>
-                <dd class="col-7 mb-0">@Model.ArrivalTime.ToString("dd MMM yyyy, HH:mm")</dd>
-            </dl>
         </div>
+    </div>
+
     </div>
 </div>
