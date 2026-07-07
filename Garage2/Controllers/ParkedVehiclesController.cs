@@ -60,6 +60,14 @@ public class ParkedVehiclesController : Controller
                 vehicleQuery = vehicleQuery.OrderByDescending(v => v.ArrivalTime);
                 break;
 
+            case "DurationAsc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.ArrivalTime);
+                break;
+
+            case "DurationDesc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.ArrivalTime);
+                break;
+
             default:
                 vehicleQuery = vehicleQuery.OrderBy(v => v.RegistrationNumber);
                 break;
@@ -81,6 +89,7 @@ public class ParkedVehiclesController : Controller
         ViewData["RegSortParm"] = (string.IsNullOrEmpty(sortOrder) || sortOrder == "RegAsc") ? "RegDesc" : "RegAsc";
         ViewData["TypeSortParm"] = sortOrder == "TypeAsc" ? "TypeDesc" : "TypeAsc";
         ViewData["DateSortParm"] = sortOrder == "DateAsc" ? "DateDesc" : "DateAsc";
+        ViewData["DurationSortParm"] = sortOrder == "DurationAsc" ? "DurationDesc" : "DurationAsc";
         ViewData["CurrentSort"] = sortOrder;
 
         return View(vehicles);

@@ -36,6 +36,16 @@ function getParkedDuration(arrivalTimeString) {
     return `${days} d ${hours} h ${minutes} m`;
 }
 
+function updateParkedDurations() {
+    const cells = document.querySelectorAll(".duration-cell");
+
+    cells.forEach(cell => {
+        const display = getParkedDuration(cell.dataset.arrivalTime);
+
+        cell.textContent = display;
+    });
+}
+
 function fadeOutSuccessAlert() {
     const alertBox = document.getElementById("successAlert");
     if (!alertBox) return;

@@ -11,7 +11,7 @@
         </div>
 
         <div class="garage-header">
-            <h1>Check Out Vehicle</h1>
+            <h1>Check Out</h1>
             <h4 class="text-danger">Are you sure you want to check out this vehicle?</h4>
         </div>
 
@@ -48,10 +48,9 @@
                             Parked Duration
                         </dt>
                         <dd class="col-7">
-                            <span id="parkedDuration" class="parked-duration"></span>
-
-                            <input type="hidden" id="arrivalTimeValue"
-                                value="@Model.ArrivalTime.ToString("yyyy-MM-ddTHH:mm:ss")" />
+                            <span class="duration-cell"
+                                data-arrival-time='@Model.ArrivalTime.ToString("yyyy-MM-ddTHH:mm:ss")'>
+                            </span>
                         </dd>
 
                     </dl>
@@ -76,7 +75,3 @@
 
     </div>
 </div>
-
-<script>
-console.log("arrivalTimeValue:", document.getElementById("arrivalTimeValue")?.value);
-</script>
