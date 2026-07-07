@@ -1,3 +1,13 @@
+:root {
+    --bs-primary: #006AA7;
+    --bs-primary-rgb: 0, 106, 167;
+
+    --bs-primary-bg-subtle: #cce4f2;
+    --bs-primary-border-subtle: #99c9e5;
+
+    --bs-primary-text-emphasis: #004a75;
+}
+
 html {
   font-size: 14px;
 }

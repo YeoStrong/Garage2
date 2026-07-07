@@ -1,4 +1,7 @@
-public interface IVehicleHandler
+namespace Garage2.Services
 {
-    bool IsExisting(string regNumber);
+    public interface IVehicleHandler
+    {
+        bool IsExisting(string regNumber);
+    }
 }

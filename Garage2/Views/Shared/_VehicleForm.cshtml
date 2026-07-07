@@ -1,14 +1,5 @@
 ﻿@model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
 
-@if (Model.ArrivalTime != default(DateTime))
-{
-    <div class="form-group mb-3">
-        <div class="alert alert-info">
-            <strong>Check In Time:</strong>
-            <span>@Model.ArrivalTime.ToString("dddd, yyyy-MM-dd HH:mm")</span>
-        </div>
-    </div>
-}
 
 <div class="form-group mb-3">
     <label asp-for="RegistrationNumber" class="control-label"></label>
@@ -18,7 +9,7 @@
 
 <div class="form-group mb-3">
     <label asp-for="VehicleType" class="control-label"></label>
-    <select asp-for="VehicleType" asp-items="Model.VehicleTypes" class="form-control"></select>
+    <select asp-for="VehicleType" asp-items="Model.VehicleTypes" class="form-select"></select>
     <span asp-validation-for="VehicleType" class="text-danger"></span>
 </div>
 
@@ -42,6 +33,6 @@
 
 <div class="form-group mb-3">
     <label asp-for="NumberOfWheels" class="control-label"></label>
-    <input asp-for="NumberOfWheels" class="form-control" min="0" max="18" />
+    <input asp-for="NumberOfWheels" class="form-control" min="0" max="18" placeholder="ex. 4" />
     <span asp-validation-for="NumberOfWheels" class="text-danger"></span>
 </div>

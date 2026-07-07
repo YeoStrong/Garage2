@@ -1,27 +1,98 @@
-
 using Garage2.Models.Entities;
 using Garage2.Models.Enums;
 using Garage2.Models.ViewModels;
+using Garage2.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Garage2.Models.Entities;
-using Garage2.Models.ViewModels;
+using System.Text.Json;
+
 public class ParkedVehiclesController : Controller
 {
     private readonly Garage2Context _context;
     private readonly IVehicleHandler _vehicleHandler;
+    private readonly GarageFeeService _garageFeeService;
 
-    public ParkedVehiclesController(Garage2Context context, IVehicleHandler vehicleHandler)
+    public ParkedVehiclesController(Garage2Context context, IVehicleHandler vehicleHandler, GarageFeeService garageFeeService)
     {
         _context = context;
         _vehicleHandler = vehicleHandler;
+        _garageFeeService = garageFeeService;
     }
 
     // GET: PARKEDVEHICLES
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string searchString, string sortOrder)
     {
-        return View(await _context.ParkedVehicle.ToListAsync());
+        var vehicleQuery = _context.ParkedVehicle.AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            searchString = searchString.Trim();
+            vehicleQuery = vehicleQuery.Where(v => v.RegistrationNumber.ToLower().Contains(searchString.ToLower()) || 
+                                                   v.VehicleType.ToString().ToLower().Contains(searchString.ToLower())
+                                                   );
+        }
+
+        switch (sortOrder)
+        {
+            case "RegAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.RegistrationNumber);
+                break;
+
+            case "RegDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.RegistrationNumber);
+                break;
+
+            case "TypeAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.VehicleType);
+                break;
+
+            case "TypeDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.VehicleType);
+                break;
+
+            case "DateAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.ArrivalTime);
+                break;
+
+            case "DateDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.ArrivalTime);
+                break;
+
+            case "DurationAsc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.ArrivalTime);
+                break;
+
+            case "DurationDesc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.ArrivalTime);
+                break;
+
+            default:
+                vehicleQuery = vehicleQuery.OrderBy(v => v.RegistrationNumber);
+                break;
+
+        }
+
+        var vehicles = await vehicleQuery
+            .Select(v => new ParkedVehicleOverviewViewModel
+            {
+                Id = v.Id,
+                VehicleType = v.VehicleType,
+                RegistrationNumber = v.RegistrationNumber,
+                ArrivalTime = v.ArrivalTime
+            })
+            .ToListAsync();
+
+        ViewData["CurrentFilter"] = searchString;
+
+        ViewData["RegSortParm"] = (string.IsNullOrEmpty(sortOrder) || sortOrder == "RegAsc") ? "RegDesc" : "RegAsc";
+        ViewData["TypeSortParm"] = sortOrder == "TypeAsc" ? "TypeDesc" : "TypeAsc";
+        ViewData["DateSortParm"] = sortOrder == "DateAsc" ? "DateDesc" : "DateAsc";
+        ViewData["DurationSortParm"] = sortOrder == "DurationAsc" ? "DurationDesc" : "DurationAsc";
+        ViewData["CurrentSort"] = sortOrder;
+
+        return View(vehicles);
     }
 
     // GET: PARKEDVEHICLES/Details/5
@@ -32,7 +103,7 @@ public class ParkedVehiclesController : Controller
             return NotFound();
         }
 
-        var parkedvehicle = await _context.ParkedVehicle
+        var parkedvehicle = await _context.ParkedVehicle.AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
         if (parkedvehicle == null)
         {
@@ -50,21 +121,19 @@ public class ParkedVehiclesController : Controller
         viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
                                      .Cast<VehicleType>()
                                      .Select(v => new SelectListItem
-                                     {
-                                         Text = v.GetDisplayName(),
-                                         Value = v.ToString()
+                                    {
+                                        Text = v.GetDisplayName(),
+                                        Value = ((int)v).ToString()
                                      });
         return View(viewModel);
     }
 
     // POST: PARKEDVEHICLES/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ParkedVehicleFormViewModel viewModel)
     {
-        bool regExists = await _context.ParkedVehicles.AnyAsync(v => v.RegistrationNumber == viewModel.RegistrationNumber);
+        bool regExists = await _context.ParkedVehicle.AnyAsync(v => v.RegistrationNumber == viewModel.RegistrationNumber);
 
         if (regExists)
         {
@@ -82,7 +151,7 @@ public class ParkedVehiclesController : Controller
                     Color = viewModel.Color ?? string.Empty,
                     Brand = viewModel.Brand ?? string.Empty,
                     Model = viewModel.Model ?? string.Empty,
-                    NumberOfWheels = viewModel.NumberOfWheels,
+                    NumberOfWheels = viewModel.NumberOfWheels.Value,
                     ArrivalTime = DateTime.Now
                 };
 
@@ -95,21 +164,30 @@ public class ParkedVehiclesController : Controller
             }
             catch (Exception ex)
             {
-
                 ModelState.AddModelError(string.Empty, "Could not check in vehicle. Please check all fields.");
                 Console.WriteLine("DB ERROR: " + ex.Message);
             }
         }
 
         viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
-            .Cast<VehicleType>()
-            .Select(v => new SelectListItem
-            {
-                Text = v.GetDisplayName(),
-                Value = v.ToString()
-            });
+                                     .Cast<VehicleType>()
+                                     .Select(v => new SelectListItem
+                                     {
+                                         Text = v.ToString(),
+                                         Value = v.ToString()
+                                     });
 
         return View(viewModel);
+    }
+
+    [HttpGet]
+    public IActionResult CheckDuplicate(string registrationNumber, int? id)
+    {
+        // If editing, we don't want to check for duplicates against the same record
+        bool isDuplicate = id.HasValue
+            ? false
+            : _context.ParkedVehicles.Any(v => v.RegistrationNumber == registrationNumber);
+        return Json(!isDuplicate);
     }
 
     // GET: PARKEDVEHICLES/Edit/5
@@ -150,8 +228,6 @@ public class ParkedVehiclesController : Controller
     }
 
     // POST: PARKEDVEHICLES/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, ParkedVehicleFormViewModel vm)
@@ -161,15 +237,14 @@ public class ParkedVehiclesController : Controller
             return NotFound();
         }
 
-        // Hämta originalet från databasen
-        var original = await _context.ParkedVehicles.FindAsync(id);
+        var original = await _context.ParkedVehicle.AsNoTracking()
+            .FirstOrDefaultAsync(v => v.Id == id);
 
         if (original == null) { return NotFound(); }
 
-        // Kontrollera endast om användaren ändrade registreringsnumret
         if (original.RegistrationNumber != vm.RegistrationNumber)
         {
-            bool regExists = await _context.ParkedVehicles.AnyAsync(v => v.RegistrationNumber == vm.RegistrationNumber);
+            bool regExists = await _context.ParkedVehicle.AnyAsync(v => v.RegistrationNumber == vm.RegistrationNumber);
 
             if (regExists)
             {
@@ -186,9 +261,9 @@ public class ParkedVehiclesController : Controller
                 original.Color = vm.Color ?? string.Empty;
                 original.Brand = vm.Brand ?? string.Empty;
                 original.Model = vm.Model ?? string.Empty;
-                original.NumberOfWheels = vm.NumberOfWheels;
+                original.NumberOfWheels = vm.NumberOfWheels.Value;
 
-                // _context.Update(original);
+                _context.Update(original);
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = $"Successfully saved changes to {vm.RegistrationNumber}.";
@@ -197,7 +272,6 @@ public class ParkedVehiclesController : Controller
             }
             catch (Exception ex)
             {
-
                 ModelState.AddModelError(string.Empty, "Could not save changes. Please check all fields.");
                 Console.WriteLine("DB ERROR: " + ex.Message);
             }
@@ -211,7 +285,6 @@ public class ParkedVehiclesController : Controller
                 Value = v.ToString()
             });
 
-
         return View(vm);
     }
 
@@ -223,12 +296,21 @@ public class ParkedVehiclesController : Controller
             return NotFound();
         }
 
-        var parkedvehicle = await _context.ParkedVehicle
+        var parkedvehicle = await _context.ParkedVehicle.AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == id);
+
         if (parkedvehicle == null)
         {
             return NotFound();
         }
+
+        /* var viewModel = new CheckOutViewModel
+        {
+            Id = parkedvehicle.Id,
+            RegistrationNumber = parkedvehicle.RegistrationNumber,
+            VehicleType = parkedvehicle.VehicleType.ToString(),
+            ArrivalTime = parkedvehicle.ArrivalTime
+        }; */
 
         return View(parkedvehicle);
     }
@@ -245,11 +327,8 @@ public class ParkedVehiclesController : Controller
             return NotFound();
         }
 
-        // Save checkout information
         DateTime checkOutTime = DateTime.Now;
 
-        // Calculate parking duration
-        TimeSpan parkingDuration = checkOutTime - parkedvehicle.ArrivalTime;
         // Create the receipt data that will be displayed after check out
         var receiptViewModel = new ReceiptViewModel
         {
@@ -261,19 +340,33 @@ public class ParkedVehiclesController : Controller
             NumberOfWheels = parkedvehicle.NumberOfWheels,
             ArrivalTime = parkedvehicle.ArrivalTime,
             CheckOutTime = checkOutTime,
-            ParkingDuration = parkingDuration,
-            TotalPrice = 0
+
+            TotalPrice = _garageFeeService.CalculateFee(
+                parkedvehicle.ArrivalTime,
+                checkOutTime)
         };
 
         _context.ParkedVehicle.Remove(parkedvehicle);
 
         await _context.SaveChangesAsync();
 
-        return View("Receipt", receiptViewModel);
+        TempData["Receipt"] = JsonSerializer.Serialize(receiptViewModel);
+
+        TempData["SuccessMessage"] = $"Successfully checked out {receiptViewModel.RegistrationNumber}.";
+
+        return RedirectToAction(nameof(Receipt));
     }
 
-    private bool ParkedVehicleExists(int? id)
+    // GET: PARKEDVEHICLES/Receipt
+    public IActionResult Receipt()
     {
-        return _context.ParkedVehicle.Any(e => e.Id == id);
+        if (TempData["Receipt"] is not string json)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        var receipt = JsonSerializer.Deserialize<ReceiptViewModel>(json);
+
+        return View(receipt);
     }
 }

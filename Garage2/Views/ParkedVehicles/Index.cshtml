@@ -1,7 +1,7 @@
-@model IEnumerable<Garage2.Models.Entities.ParkedVehicle>
+@model IEnumerable<Garage2.Models.ViewModels.ParkedVehicleOverviewViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Overview";
 }
 
 @if (TempData["SuccessMessage"] != null)
@@ -11,79 +11,168 @@
     </div>
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <!-- <div class="sv-flag-bar-rounded"></div> -->
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.VehicleType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RegistrationNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Color)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Model)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberOfWheels)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ArrivalTime)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.VehicleType)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.RegistrationNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Color)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Model)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.NumberOfWheels)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.ArrivalTime)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="CheckOut" asp-route-id="@item.Id">Check Out</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
+        <form asp-action="Index" method="get" class="d-flex align-items-center m-0">
+            <div class="input-group" style="max-width: 400px;">
+                <input type="text"
+                    id="searchBox"
+                    name="searchString"
+                    class="form-control"
+                    placeholder="Search with Registration Number"
+                    value="@Context.Request.Query["searchString"]"
+                    autofocus /> <button type="submit" class="btn sv-btn-create">Search</button>
 
-<script>
-    const alertBox = document.getElementById("successAlert");
-    if (alertBox) {
-        setTimeout(() => {
-            alertBox.style.transition = "opacity 0.5s";
-            alertBox.style.opacity = "0";
-            setTimeout(() => alertBox.remove(), 500);
-        }, 3000);
+                @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string))
+                {
+                    <a asp-action="Index"
+                    class="btn sv-badge-sm text-dark py-0 d-inline-flex align-items-center fs-6">
+                        Clear
+                    </a>
+                }
+            </div>
+        </form>
+
+        <a asp-action="Create" class="btn sv-btn-create d-flex align-items-center">
+            Check In
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string))
+        {
+            <div class="alert alert-warning text-center mt-4" role="alert">
+                No vehicles found matching <strong>"@ViewData["CurrentFilter"]"</strong>.
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center mt-4" role="alert">
+                The garage is currently empty. No vehicles parked yet!
+            </div>
+        }
     }
-</script>
+    else
+    {
+        <div class="mb-3 text-muted">
+            <strong>@Model.Count()</strong> @(Model.Count() == 1 ? "vehicle found." : "vehicles found.")
+        </div>
+
+        <div class="table-responsive">
+            <table class="table sv-table align-middle">
+                <thead>
+                    <tr>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewData["TypeSortParm"]"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="sv-nav-link">
+                                Vehicle Type
+                                @if (ViewData["CurrentSort"]?.ToString() == "TypeAsc")
+                                {
+                                    <span>▲</span>
+                                }
+                                else if (ViewData["CurrentSort"]?.ToString() == "TypeDesc")
+                                {
+
+                                    <span>▼</span>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewData["RegSortParm"]"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="sv-nav-link">
+                                Registration Number
+                                @if (ViewData["CurrentSort"]?.ToString() == "RegAsc")
+                                {
+                                    <span>▲</span>
+                                }
+                                else if (ViewData["CurrentSort"]?.ToString() == "RegDesc")
+                                {
+
+                                    <span>▼</span>
+                                }
+                                else if (string.IsNullOrEmpty(ViewData["CurrentSort"] as string))
+                                {
+                                    <span>▲</span>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewData["DateSortParm"]"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="sv-nav-link">
+                                Arrival Time
+                                @if (ViewData["CurrentSort"]?.ToString() == "DateAsc")
+                                {
+                                    <span>▲</span>
+                                }
+                                else if (ViewData["CurrentSort"]?.ToString() == "DateDesc")
+                                {
+                                    <span>▼</span>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"
+                               asp-route-sortOrder="@ViewData["DurationSortParm"]"
+                               asp-route-searchString="@ViewData["CurrentFilter"]"
+                               class="sv-nav-link">
+                                Parked Duration
+                                @if (ViewData["CurrentSort"]?.ToString() == "DurationAsc")
+                                {
+                                    <span>▲</span>
+                                }
+                                else if (ViewData["CurrentSort"]?.ToString() == "DurationDesc")
+                                {
+                                    <span>▼</span>
+                                }
+                            </a>
+                        </th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><span>@Html.DisplayFor(modelItem => item.VehicleType)</span></td>
+                            <td><strong>@Html.DisplayFor(modelItem => item.RegistrationNumber)</strong></td>
+                            <td>@item.ArrivalTime.ToString("dd MMM yyyy, HH:mm")</td>
+                            <td data-arrival-time='@item.ArrivalTime.ToString("yyyy-MM-ddTHH:mm:ss")' class="duration-cell"></td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn sv-btn-details sv-action-btn w-sm-auto">Details</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn sv-btn-details sv-action-btn w-sm-auto">Update</a>
+                                <a asp-action="CheckOut" asp-route-id="@item.Id" class="btn btn-outline-danger sv-action-btn w-sm-auto">Check Out</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        fadeOutSuccessAlert();
+
+        const searchBox = document.getElementById('searchBox');
+        if (searchBox) 
+        {
+            searchBox.focus();
+            const val = searchBox.value;
+            searchBox.value = '';
+            searchBox.value = val;
+        }
+
+        updateParkedDurations();
+        setInterval(updateParkedDurations, 60000);
+    </script>
+}
