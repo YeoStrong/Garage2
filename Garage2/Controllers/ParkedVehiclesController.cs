@@ -22,16 +22,18 @@ public class ParkedVehiclesController : Controller
     }
 
     // GET: PARKEDVEHICLES
-    public async Task<IActionResult> Index(string searchString, string sortOrder)
+    public async Task<IActionResult> Index(string searchString, string sortOrder, string searchTime)
     {
         var vehicleQuery = _context.ParkedVehicle.AsQueryable();
 
         if (!string.IsNullOrEmpty(searchString))
         {
-            searchString = searchString.Trim();
-            vehicleQuery = vehicleQuery.Where(v => v.RegistrationNumber.ToLower().Contains(searchString.ToLower()) || 
-                                                   v.VehicleType.ToString().ToLower().Contains(searchString.ToLower())
-                                                   );
+            searchString= searchString.Trim().ToLower();
+
+            vehicleQuery = vehicleQuery.Where(
+                v => v.RegistrationNumber.ToLower().Contains(searchString) || 
+                v.VehicleType.ToString().ToLower().Contains(searchString)
+            );
         }
 
         switch (sortOrder)
@@ -84,7 +86,45 @@ public class ParkedVehiclesController : Controller
             })
             .ToListAsync();
 
+        if (!string.IsNullOrEmpty(searchTime)) {
+            searchTime = searchTime.Trim().ToLower();
+
+            bool isDate = DateTime.TryParse(searchTime, out DateTime parsedDate);
+            bool isYear = int.TryParse(searchTime, out int year);
+            bool isDay = int.TryParse(searchTime, out int day);
+
+            bool isNumber = int.TryParse(searchTime, out int number);
+
+            var months = new[]
+            {
+                "january","february","march","april","may","june",
+                "july","august","september","october","november","december"
+            };
+            bool isMonthName = months.Any(m => m.Contains(searchTime));
+
+            var weeks = new[]
+            {
+                "sunday", "monday","tuesday","wednesday","thursday","friday","saturday"
+            };
+            bool isWeekName = weeks.Any(w => w.Contains(searchTime));
+
+            bool isDouble = double.TryParse(searchTime, out double doubleNumber);
+
+            vehicles = vehicles.Where(v =>
+                FormatDuration(v.ArrivalTime).Contains(searchTime) ||
+                (isDate && v.ArrivalTime.Date == parsedDate.Date) ||
+                (isYear && v.ArrivalTime.Year == year) ||
+                (isDay && v.ArrivalTime.Day == day) ||
+                (isNumber && v.ArrivalTime.Month == number) ||
+                (isMonthName && months[v.ArrivalTime.Month - 1].Contains(searchTime)) ||
+                (isWeekName && weeks[(int)v.ArrivalTime.DayOfWeek].Contains(searchTime)) ||
+                v.ArrivalTime.Minute.ToString().Contains(searchTime) ||
+                v.ArrivalTime.Hour.ToString().Contains(searchTime)
+            ).ToList();
+        }
+
         ViewData["CurrentFilter"] = searchString;
+        ViewData["CurrentTimeFilter"] = searchTime;
 
         ViewData["RegSortParm"] = (string.IsNullOrEmpty(sortOrder) || sortOrder == "RegAsc") ? "RegDesc" : "RegAsc";
         ViewData["TypeSortParm"] = sortOrder == "TypeAsc" ? "TypeDesc" : "TypeAsc";
@@ -368,5 +408,15 @@ public class ParkedVehiclesController : Controller
         var receipt = JsonSerializer.Deserialize<ReceiptViewModel>(json);
 
         return View(receipt);
+    }
+
+    private string FormatDuration(DateTime arrival)
+    {
+        var span = DateTime.Now - arrival;
+        int days = (int)span.TotalDays;
+        int hours = span.Hours;
+        int minutes = span.Minutes;
+
+        return $"{days}d {hours}h {minutes}m , {days} d {hours} h {minutes} m";
     }
 }
