@@ -37,16 +37,19 @@
 .sv-badge {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     padding: 5px 12px;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
+    width: 12ch;
+    white-space: nowrap;
 }
 
 .sv-label {
     color: #8a8a8a;
-    font-weight: 500;
+    font-weight: bold;
     font-size: 0.9rem;
 }
 
@@ -76,6 +79,9 @@
     color: var(--primary-color);
     border-color: var(--primary-color);
     background-color: transparent;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    margin-right: 4px;
 }
 
     .sv-btn-details:hover {
@@ -127,6 +133,7 @@
     font-size: 0.8rem;
     padding: 4px 10px;
     margin-right: 4px;
+    border: none !important;
 }
 
 .sv-navbar {
@@ -147,6 +154,7 @@
 .sv-nav-link {
     color: var(--text-color) !important;
     font-weight: 500;
+    text-decoration: none;
 }
 
 .sv-nav-link:hover {

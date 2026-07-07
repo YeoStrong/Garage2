@@ -1,56 +1,58 @@
 @model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
 
 @{
-    ViewData["Title"] = "Modify Vehicle";
+    ViewData["Title"] = "Update Parked Vehicle";
 }
 
-<div class="container col-md-8">
-    <div class="col-md-8 mx-auto">
-        <div>
-            <a asp-action="Index" class="sv-back-link small">&larr; Back to overview</a>
-        </div>
+<div class="container">
+    <div class="col-md-6 mx-auto">
+        <a asp-action="Index" class="sv-back-link small">&larr; Back to overview</a>
 
-        <div class="garage-header mb-3">
+        <div class="garage-header">
             <h3>Update Parked Vehicle</h3>
         </div>
 
         <div class="row justify-content-center">
             <div class="col-md-12">
-                <div class="garage-card">
-                    <form asp-action="Edit">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="card sv-card mt-3">
+                    <div class="sv-flag-bar"></div>
 
+                    <div class="card-body p-4">
                         @Html.HiddenFor(m => m.Id)
                         @Html.HiddenFor(m => m.ArrivalTime)
 
-                        <div class="form-group mb-3">
-                            <div class="alert alert-info">
-                                <strong>Check In Time:</strong>
+                        <div class="alert alert-info">
+                            <div class="mb-2">
+                                <strong>Checked In Time:</strong>
                                 <span>@Model.ArrivalTime.ToString("dddd, yyyy-MM-dd HH:mm")</span>
+                            </div>
 
-                                <br />
-
-                                <div class="parked-duration">
-                                    <strong>Parked Duration: </strong>
-                                    <span class="duration-cell"
-                                        data-arrival-time='@Model.ArrivalTime.ToString("yyyy-MM-ddTHH:mm:ss")'>
-                                    </span>
-                                </div>
+                            <div class="parked-duration">
+                                <strong>Parked Duration: </strong>
+                                <span class="duration-cell"
+                                    data-arrival-time='@Model.ArrivalTime.ToString("yyyy-MM-ddTHH:mm:ss")'>
+                                </span>
                             </div>
                         </div>
 
-                        <partial name="_VehicleForm" model="Model" />
+                        <hr class="my-3"/>
 
-                        <div class="form-group mt-4 d-flex gap-4">
-                            <button type="submit" class="btn garage-btn w-50">Save Changes</button>
+                        <form asp-action="Edit">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                            <a asp-action="Index" class="btn btn-secondary w-50">Cancel</a>
-                        </div>
-                    </form>
+
+                            <partial name="_VehicleForm" model="Model"/>
+
+                            <div class="form-group mt-4 d-flex gap-4">
+                                <button type="submit" class="btn garage-btn w-50">Save Changes</button>
+
+                                <a asp-action="Index" class="btn btn-secondary w-50">Cancel</a>
+                            </div>
+                        </form>
+                    </div>  
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
