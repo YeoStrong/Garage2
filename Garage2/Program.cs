@@ -1,5 +1,6 @@
 using Garage2.Models.Entities;
 using Garage2.Models.Enums;
+using Garage2.Models.Parking;
 using Garage2.Services;
 using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,11 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IVehicleHandler, VehicleHandler>();
 builder.Services.AddScoped<GarageFeeService>();
+
+// Del 2: garage parking spot settings + service
+builder.Services.Configure<GarageSettings>(
+    builder.Configuration.GetSection(GarageSettings.SectionName));
+builder.Services.AddScoped<IParkingSpotService, ParkingSpotService>();
 
 var app = builder.Build();
 

@@ -1,5 +1,6 @@
 using Garage2.Models.Entities;
 using Garage2.Models.Enums;
+using Garage2.Models.Parking;
 using Garage2.Models.ViewModels;
 using Garage2.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,18 +8,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using Garage2.Models.ViewModels;
 
 public class ParkedVehiclesController : Controller
 {
     private readonly Garage2Context _context;
     private readonly IVehicleHandler _vehicleHandler;
     private readonly GarageFeeService _garageFeeService;
+    private readonly IParkingSpotService _parkingSpotService;
 
-    public ParkedVehiclesController(Garage2Context context, IVehicleHandler vehicleHandler, GarageFeeService garageFeeService)
+    public ParkedVehiclesController(
+        Garage2Context context,
+        IVehicleHandler vehicleHandler,
+        GarageFeeService garageFeeService,
+        IParkingSpotService parkingSpotService)
     {
         _context = context;
         _vehicleHandler = vehicleHandler;
         _garageFeeService = garageFeeService;
+        _parkingSpotService = parkingSpotService;
     }
 
     // GET: PARKEDVEHICLES
@@ -29,7 +37,7 @@ public class ParkedVehiclesController : Controller
         if (!string.IsNullOrEmpty(searchString))
         {
             searchString = searchString.Trim();
-            vehicleQuery = vehicleQuery.Where(v => v.RegistrationNumber.ToLower().Contains(searchString.ToLower()) || 
+            vehicleQuery = vehicleQuery.Where(v => v.RegistrationNumber.ToLower().Contains(searchString.ToLower()) ||
                                                    v.VehicleType.ToString().ToLower().Contains(searchString.ToLower())
                                                    );
         }
@@ -92,9 +100,58 @@ public class ParkedVehiclesController : Controller
         ViewData["DurationSortParm"] = sortOrder == "DurationAsc" ? "DurationDesc" : "DurationAsc";
         ViewData["CurrentSort"] = sortOrder;
 
+        // Del 2: free spot count for the landing page
+        ViewData["FreeSpotCount"] = _parkingSpotService.GetFreeSpotCount();
+        ViewData["TotalSpots"] = _parkingSpotService.TotalSpots;
+
         return View(vehicles);
     }
 
+    // GET: PARKEDVEHICLES/Overview
+    public IActionResult Overview()
+    {
+        var viewModel = new ParkingOverviewViewModel
+        {
+            TotalSpots = _parkingSpotService.TotalSpots,
+            FreeSpotCount = _parkingSpotService.GetFreeSpotCount(),
+            Spots = _parkingSpotService.GetSpotOverview()
+        };
+
+        return View(viewModel);
+    }
+    // GET: PARKEDVEHICLES/Statistics
+    public async Task<IActionResult> Statistics()
+    {
+        var vehicles = await _context.ParkedVehicle.AsNoTracking().ToListAsync();
+
+        var now = DateTime.Now;
+
+        var viewModel = new GarageStatisticsViewModel
+        {
+            TotalVehicles = vehicles.Count,
+            TotalWheels = vehicles.Sum(v => v.NumberOfWheels),
+            EstimatedCurrentRevenue = vehicles.Sum(v => _garageFeeService.CalculateFee(v.ArrivalTime, now)),
+            VehicleCountsByType = vehicles
+                .GroupBy(v => v.VehicleType)
+                .ToDictionary(g => g.Key, g => g.Count()),
+            AverageParkedDuration = vehicles.Any()
+                ? TimeSpan.FromMinutes(vehicles.Average(v => (now - v.ArrivalTime).TotalMinutes))
+                : TimeSpan.Zero
+        };
+
+        viewModel.MostCommonType = viewModel.VehicleCountsByType.Any()
+            ? viewModel.VehicleCountsByType.OrderByDescending(kvp => kvp.Value).First().Key
+            : null;
+
+        var longestParked = vehicles.OrderBy(v => v.ArrivalTime).FirstOrDefault();
+        if (longestParked != null)
+        {
+            viewModel.LongestParkedArrivalTime = longestParked.ArrivalTime;
+            viewModel.LongestParkedRegistrationNumber = longestParked.RegistrationNumber;
+        }
+
+        return View(viewModel);
+    }
     // GET: PARKEDVEHICLES/Details/5
     public async Task<IActionResult> Details(int? id)
     {
@@ -118,13 +175,8 @@ public class ParkedVehiclesController : Controller
     {
         var viewModel = new ParkedVehicleFormViewModel();
 
-        viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
-                                     .Cast<VehicleType>()
-                                     .Select(v => new SelectListItem
-                                    {
-                                        Text = v.GetDisplayName(),
-                                        Value = ((int)v).ToString()
-                                     });
+        viewModel.VehicleTypes = BuildVehicleTypeSelectList();
+
         return View(viewModel);
     }
 
@@ -138,6 +190,12 @@ public class ParkedVehiclesController : Controller
         if (regExists)
         {
             ModelState.AddModelError("RegistrationNumber", "The registration number already exists. Please enter a different one.");
+        }
+
+        // Del 2: reject if there isn't actually room for this vehicle type
+        if (!_parkingSpotService.CanParkVehicleType(viewModel.VehicleType))
+        {
+            ModelState.AddModelError("VehicleType", "There is no available parking spot for this vehicle type right now.");
         }
 
         if (ModelState.IsValid)
@@ -158,9 +216,23 @@ public class ParkedVehiclesController : Controller
                 _context.Add(parkedvehicle);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"Successfully checked in {viewModel.RegistrationNumber}.";
+                // Del 2: assign a fixed parking spot now that the vehicle has an Id
+                var assignmentResult = _parkingSpotService.AssignSpot(viewModel.VehicleType, parkedvehicle.Id);
 
-                return RedirectToAction(nameof(Index));
+                if (!assignmentResult.Success)
+                {
+                    // Extremely unlikely race condition: spot became unavailable between
+                    // the check above and this point. Roll back the check-in.
+                    _context.Remove(parkedvehicle);
+                    await _context.SaveChangesAsync();
+
+                    ModelState.AddModelError("VehicleType", assignmentResult.ErrorMessage ?? "Could not assign a parking spot.");
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = $"Successfully checked in {viewModel.RegistrationNumber}.";
+                    return RedirectToAction(nameof(Index));
+                }
             }
             catch (Exception ex)
             {
@@ -169,13 +241,7 @@ public class ParkedVehiclesController : Controller
             }
         }
 
-        viewModel.VehicleTypes = Enum.GetValues(typeof(VehicleType))
-                                     .Cast<VehicleType>()
-                                     .Select(v => new SelectListItem
-                                     {
-                                         Text = v.ToString(),
-                                         Value = v.ToString()
-                                     });
+        viewModel.VehicleTypes = BuildVehicleTypeSelectList();
 
         return View(viewModel);
     }
@@ -368,5 +434,22 @@ public class ParkedVehiclesController : Controller
         var receipt = JsonSerializer.Deserialize<ReceiptViewModel>(json);
 
         return View(receipt);
+    }
+
+    // Del 2: builds the VehicleType dropdown with unavailable types grayed out
+    private IEnumerable<SelectListItem> BuildVehicleTypeSelectList()
+    {
+        var availability = _parkingSpotService.GetVehicleTypeAvailability();
+
+        return Enum.GetValues(typeof(VehicleType))
+            .Cast<VehicleType>()
+            .Select(v => new SelectListItem
+            {
+                Text = availability.TryGetValue(v, out var canPark) && canPark
+                    ? v.GetDisplayName()
+                    : $"{v.GetDisplayName()} (Full)",
+                Value = ((int)v).ToString(),
+                Disabled = !(availability.TryGetValue(v, out var available) && available)
+            });
     }
 }
