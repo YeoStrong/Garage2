@@ -1,0 +1,42 @@
+﻿@model Garage2.Models.ViewModels.ParkingOverviewViewModel
+
+@{
+    ViewData["Title"] = "Spot Overview";
+}
+
+<div class="container mt-4">
+    <a asp-action="Index" class="sv-back-link small">&larr; Back to overview</a>
+
+    <div class="garage-header">
+        <h3>Parking Spot Overview</h3>
+    </div>
+
+    <div class="alert alert-info mt-3">
+        <strong>@Model.FreeSpotCount</strong> of <strong>@Model.TotalSpots</strong> parking spots free
+    </div>
+
+    <div class="spot-grid mt-4">
+        @foreach (var spot in Model.Spots)
+        {
+            var isFull = !spot.IsFree;
+            var isMotorcycleShared = spot.OccupyingVehicleType?.ToString() == "Motorcycle" && spot.MotorcycleSlotsUsed > 0;
+
+            <div class="spot-tile @(isFull ? "spot-occupied" : "spot-free")">
+                <div class="spot-number">#@spot.SpotNumber</div>
+
+                @if (isMotorcycleShared)
+                {
+                    <div class="spot-status">🏍 @spot.MotorcycleSlotsUsed/3</div>
+                }
+                else if (!spot.IsFree && spot.OccupyingVehicleType != null)
+                {
+                    <div class="spot-status">@spot.OccupyingVehicleType</div>
+                }
+                else
+                {
+                    <div class="spot-status">Free</div>
+                }
+            </div>
+        }
+    </div>
+</div>

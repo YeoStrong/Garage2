@@ -160,3 +160,39 @@
 .sv-nav-link:hover {
     color: var(--secondary-color-soft) !important;
 }
+
+
+.spot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+}
+
+.spot-tile {
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.spot-free {
+    background-color: #e6f7ec;
+    border-color: #b7e4c7;
+}
+
+.spot-occupied {
+    background-color: var(--secondary-color-soft);
+    border-color: var(--secondary-color);
+}
+
+.spot-number {
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+.spot-status {
+    font-size: 0.8rem;
+    margin-top: 4px;
+    color: #333;
+}

@@ -39,7 +39,7 @@
                     !string.IsNullOrEmpty(ViewData["CurrentTimeFilter"] as string))
                 {
                     <a asp-action="Index"
-                    class="btn sv-badge-sm text-dark py-0 d-inline-flex align-items-center fs-6">
+                       class="btn sv-badge-sm text-dark py-0 d-inline-flex align-items-center fs-6">
                         Clear
                     </a>
                 }
@@ -49,6 +49,16 @@
         <a asp-action="Create" class="btn sv-btn-create d-flex align-items-center">
             Check In
         </a>
+    </div>
+
+    @{
+        var freeSpots = (int)(ViewData["FreeSpotCount"] ?? 0);
+        var totalSpots = (int)(ViewData["TotalSpots"] ?? 0);
+        var spotAlertClass = freeSpots == 0 ? "alert-danger" : (freeSpots <= 3 ? "alert-warning" : "alert-info");
+    }
+    <div class="alert @spotAlertClass d-flex justify-content-between align-items-center mb-4" role="status">
+        <span><strong>@freeSpots</strong> of <strong>@totalSpots</strong> parking spots free</span>
+        <a asp-action="Overview" class="small fw-semibold" style="color: var(--primary-color);">View spot map &rarr;</a>
     </div>
 
     @if (!Model.Any())
@@ -175,7 +185,7 @@
         fadeOutSuccessAlert();
 
         const searchBox = document.getElementById('searchBox');
-        if (searchBox) 
+        if (searchBox)
         {
             searchBox.focus();
             const val = searchBox.value;
