@@ -383,3 +383,6 @@ out/
 *.db
 *.db-shm
 *.db-wal
+
+# DB Browser project files
+*.sqbpro

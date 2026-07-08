@@ -13,6 +13,8 @@ namespace Garage2.Models.Parking
         /// </summary>
         public const int MotorcycleSlotsPerSpot = 3;
 
+        public const int BicycleSlotsPerSpot = 5;
+
         /// <summary>
         /// Returns how many whole, contiguous spots a vehicle type requires.
         /// Returns 0 for motorcycles, since they use fractional spots instead.
@@ -22,16 +24,23 @@ namespace Garage2.Models.Parking
             return type switch
             {
                 VehicleType.Truck => 2,
+                VehicleType.Bus => 2,
                 VehicleType.Airplane => 3,
                 VehicleType.Boat => 3,
                 VehicleType.Motorcycle => 0,
-                _ => 1 // Car, Bus, Bicycle
+                VehicleType.Bicycle => 0,
+                _ => 1 // Car
             };
         }
 
         public static bool IsMotorcycleType(VehicleType type)
         {
             return type == VehicleType.Motorcycle;
+        }
+
+        public static bool IsBicycleType(VehicleType type)
+        {
+            return type == VehicleType.Bicycle;
         }
     }
 }
