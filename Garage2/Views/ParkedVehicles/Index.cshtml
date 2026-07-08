@@ -63,10 +63,14 @@
 
     @if (!Model.Any())
     {
-        @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string))
+        @if (!string.IsNullOrEmpty(ViewData["CurrentFilter"] as string) || !string.IsNullOrEmpty(ViewData["CurrentTimeFilter"] as string))
         {
+            var searchFilterText = string.Join(" / ", 
+                new[] { ViewData["CurrentFilter"] as string, ViewData["CurrentTimeFilter"] as string }
+                .Where(s => !string.IsNullOrEmpty(s)));
+
             <div class="alert alert-warning text-center mt-4" role="alert">
-                No vehicles found matching <strong>"@ViewData["CurrentFilter"]"</strong>.
+                No vehicles found matching <strong>"@searchFilterText"</strong>.
             </div>
         }
         else
