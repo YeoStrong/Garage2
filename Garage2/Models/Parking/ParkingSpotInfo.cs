@@ -19,6 +19,7 @@ namespace Garage2.Models.Parking
         public VehicleType? OccupyingVehicleType { get; set; }
 
         public int? OccupyingVehicleId { get; set; }
+        public string[] OccupyingVehicleRegNums { get; set; }
 
         /// <summary>
         /// How many of the motorcycle slots (0-3) on this spot are currently used.
@@ -26,5 +27,9 @@ namespace Garage2.Models.Parking
         /// </summary>
         public int MotorcycleSlotsUsed { get; set; }
         public int BicycleSlotsUsed { get; set; }
+
+        public bool IsLeftSpot { get; set; }
+        public bool IsMiddleSpot { get; set; }
+        public bool IsRightSpot { get; set; }
     }
 }

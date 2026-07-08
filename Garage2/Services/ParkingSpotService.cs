@@ -45,6 +45,11 @@ namespace Garage2.Services
 
                     spot.MotorcycleSlotsUsed++;
                     spot.OccupyingVehicleType = VehicleType.Motorcycle;
+                    if (spot.OccupyingVehicleRegNums == null)
+                    {
+                        spot.OccupyingVehicleRegNums = new string[VehicleSpotRequirement.MotorcycleSlotsPerSpot];
+                    }
+                    spot.OccupyingVehicleRegNums[spot.MotorcycleSlotsUsed - 1] = vehicle.RegistrationNumber;
 
                     if (spot.MotorcycleSlotsUsed >= VehicleSpotRequirement.MotorcycleSlotsPerSpot)
                     {
@@ -57,6 +62,12 @@ namespace Garage2.Services
 
                     spot.BicycleSlotsUsed++;
                     spot.OccupyingVehicleType = VehicleType.Bicycle;
+                    if (spot.OccupyingVehicleRegNums == null)
+                    {
+                        spot.OccupyingVehicleRegNums = new string[VehicleSpotRequirement.BicycleSlotsPerSpot];
+                    }
+                    spot.OccupyingVehicleRegNums[spot.BicycleSlotsUsed - 1] = vehicle.RegistrationNumber;
+
 
                     if (spot.BicycleSlotsUsed >= VehicleSpotRequirement.BicycleSlotsPerSpot)
                     {
@@ -75,6 +86,17 @@ namespace Garage2.Services
                         spot.IsFree = false;
                         spot.OccupyingVehicleType = vehicle.VehicleType;
                         spot.OccupyingVehicleId = vehicle.Id;
+                        if (spot.OccupyingVehicleRegNums == null)
+                        {
+                            spot.OccupyingVehicleRegNums = new string[1];
+                        }
+                        spot.OccupyingVehicleRegNums[0] = vehicle.RegistrationNumber;
+
+                        if (required > 1) {
+                            spot.IsLeftSpot = (i == 0);
+                            spot.IsMiddleSpot = (i > 0 && i < required - 1);
+                            spot.IsRightSpot = (i == required - 1);
+                        }
                     }
                 }
             }

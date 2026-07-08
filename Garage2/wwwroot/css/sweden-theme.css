@@ -166,7 +166,11 @@
 .spot-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 10px;
+    gap: 0;
+}
+
+.spot-gap {
+    padding: 5px;
 }
 
 .spot-tile {
@@ -244,4 +248,34 @@
         var(--secondary-color-soft) 80%,
         var(--free-spot-color) 80%
     );
+}
+
+.spot-left {
+    border-left: 2px solid var(--secondary-color);
+    border-top: 2px solid var(--secondary-color);
+    border-bottom: 2px solid var(--secondary-color);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    margin: 5px 0 5px 5px;
+}
+
+.spot-middle {
+    border-left: none;
+    border-top: 2px solid var(--secondary-color);
+    border-bottom: 2px solid var(--secondary-color);
+    border-right: none;
+    margin: 5px 0;
+}
+
+.spot-right {
+    border-right: none;
+    border-top: 2px solid var(--secondary-color);
+    border-bottom: 2px solid var(--secondary-color);
+    border-right: 2px solid var(--secondary-color);
+    border-radius: 0 8px 8px 0;
+    margin: 5px 5px 5px 0;
+}
+
+.spot-whole {
+    margin: 5px;
 }

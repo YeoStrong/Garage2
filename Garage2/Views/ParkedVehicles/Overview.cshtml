@@ -19,8 +19,8 @@
         @foreach (var spot in Model.Spots)
         {
             var isFull = !spot.IsFree;
-            var isMotorcycleShared = spot.OccupyingVehicleType?.ToString() == "Motorcycle" && spot.MotorcycleSlotsUsed > 0;
-            var isBicycleShared = spot.OccupyingVehicleType?.ToString() == "Bicycle" && spot.BicycleSlotsUsed > 0;
+            var isMotorcycleShared = spot.OccupyingVehicleType == VehicleType.Motorcycle && spot.MotorcycleSlotsUsed > 0;
+            var isBicycleShared = spot.OccupyingVehicleType == VehicleType.Bicycle && spot.BicycleSlotsUsed > 0;
 
             string fractionClass = isFull ? "spot-occupied" : "spot-free";
             if (isMotorcycleShared)
@@ -42,25 +42,29 @@
                     {fractionClass = "bicy-4of5";}
             }
 
-            <div class="spot-tile @fractionClass">
-                <div class="spot-number">#@spot.SpotNumber</div>
+            <div class="spot-gap 
+                    @(spot.IsLeftSpot ? "spot-left" : 
+                    spot.IsMiddleSpot ? "spot-middle" : 
+                    spot.IsRightSpot ? "spot-right" : 
+                    "spot-whole")"
+                title="@(spot.OccupyingVehicleRegNums != null 
+                    ? string.Join(", ", spot.OccupyingVehicleRegNums.Where(x => !string.IsNullOrWhiteSpace(x))) 
+                    : "")"
+            >
+                <div class="spot-tile @fractionClass">
+                    <div class="spot-number">#@spot.SpotNumber</div>
 
-                @if (isMotorcycleShared)
-                {
-                    <div class="spot-status">🏍 @spot.MotorcycleSlotsUsed/3</div>
-                }
-                else if (isBicycleShared)
-                {
-                    <div class="spot-status">🚲 @spot.BicycleSlotsUsed/5</div>
-                }
-                else if (!spot.IsFree && spot.OccupyingVehicleType != null)
-                {
-                    <div class="spot-status">@spot.OccupyingVehicleType</div>
-                }
-                else
-                {
-                    <div class="spot-status">Free</div>
-                }
+                    <div class="spot-status">
+                        @spot.OccupyingVehicleType.GetDisplayIcon()
+
+                        @(isMotorcycleShared ? spot.MotorcycleSlotsUsed/3 :
+                        isBicycleShared ? spot.BicycleSlotsUsed/5 :
+                        !spot.IsFree ? (spot.OccupyingVehicleRegNums != null && !spot.IsMiddleSpot && !spot.IsRightSpot
+                                ? spot.OccupyingVehicleRegNums[0].Substring(0, 3) + "..." 
+                                : "") :
+                        "Free")
+                    </div>
+                </div>
             </div>
         }
     </div>
