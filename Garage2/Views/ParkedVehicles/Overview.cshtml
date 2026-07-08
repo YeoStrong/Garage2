@@ -21,7 +21,16 @@
             var isFull = !spot.IsFree;
             var isMotorcycleShared = spot.OccupyingVehicleType?.ToString() == "Motorcycle" && spot.MotorcycleSlotsUsed > 0;
 
-            <div class="spot-tile @(isFull ? "spot-occupied" : "spot-free")">
+            string fractionClass = isFull ? "spot-occupied" : "spot-free";
+            if (isMotorcycleShared)
+            {
+                if (spot.MotorcycleSlotsUsed == 1)
+                    {fractionClass = "moto-1of3";}
+                else if (spot.MotorcycleSlotsUsed == 2)
+                    {fractionClass = "moto-2of3";}
+            }
+
+            <div class="spot-tile @fractionClass">
                 <div class="spot-number">#@spot.SpotNumber</div>
 
                 @if (isMotorcycleShared)

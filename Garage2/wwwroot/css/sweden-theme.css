@@ -10,6 +10,7 @@
     /* Light background */
     --text-color: #fff;
     /* Bootstrap dark text */
+    --free-spot-color: #e6f7ec;
 }
 
 .sv-flag-bar {
@@ -176,7 +177,7 @@
 }
 
 .spot-free {
-    background-color: #e6f7ec;
+    background-color: var(--free-spot-color);
     border-color: #b7e4c7;
 }
 
@@ -195,4 +196,20 @@
     font-size: 0.8rem;
     margin-top: 4px;
     color: #333;
+}
+
+.moto-1of3 {
+    background: linear-gradient(
+        to right,
+        var(--secondary-color-soft) 33%,
+        var(--free-spot-color) 33%
+    );
+}
+
+.moto-2of3 {
+    background: linear-gradient(
+        to right,
+        var(--secondary-color-soft) 66%,
+        var(--free-spot-color) 66%
+    );
 }
