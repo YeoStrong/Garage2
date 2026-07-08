@@ -38,7 +38,8 @@ public class ParkedVehiclesController : Controller
 
             vehicleQuery = vehicleQuery.Where(
                 v => v.RegistrationNumber.ToLower().Contains(searchString) || 
-                v.VehicleType.ToString().ToLower().Contains(searchString)
+                v.VehicleType.ToString().ToLower().Contains(searchString) ||
+                v.AssignedSpotNumber.ToString().Contains(searchString)
             );
         }
 
@@ -58,6 +59,14 @@ public class ParkedVehiclesController : Controller
 
             case "TypeDesc":
                 vehicleQuery = vehicleQuery.OrderByDescending(v => v.VehicleType.ToString());
+                break;
+
+            case "SpotAsc":
+                vehicleQuery = vehicleQuery.OrderBy(v => v.AssignedSpotNumber);
+                break;
+
+            case "SpotDesc":
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.AssignedSpotNumber);
                 break;
 
             case "DateAsc":
@@ -132,6 +141,8 @@ public class ParkedVehiclesController : Controller
 
         ViewData["RegSortParm"] = (string.IsNullOrEmpty(sortOrder) || sortOrder == "RegAsc") ? "RegDesc" : "RegAsc";
         ViewData["TypeSortParm"] = sortOrder == "TypeAsc" ? "TypeDesc" : "TypeAsc";
+        ViewData["SpotSortParm"] = sortOrder == "SpotAsc" ? "SpotDesc" : "SpotAsc";
+
         ViewData["DateSortParm"] = sortOrder == "DateAsc" ? "DateDesc" : "DateAsc";
         ViewData["DurationSortParm"] = sortOrder == "DurationAsc" ? "DurationDesc" : "DurationAsc";
         ViewData["CurrentSort"] = sortOrder;
