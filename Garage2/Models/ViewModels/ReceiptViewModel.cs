@@ -16,6 +16,7 @@ namespace Garage2.Models.ViewModels
         public string Color { get; set; } = string.Empty;
 
         public int NumberOfWheels { get; set; }
+        public int? AssignedSpotNumber { get; set; }
 
         public DateTime ArrivalTime { get; set; }
 
