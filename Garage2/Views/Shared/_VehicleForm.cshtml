@@ -1,4 +1,6 @@
-﻿@model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
+﻿@using Garage2.Helpers
+
+@model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
 
 @Html.HiddenFor(m => m.Id)
 @Html.HiddenFor(m => m.ArrivalTime)
@@ -15,13 +17,10 @@
 
     @if (Model.Id.HasValue)
     {
-        <select asp-for="VehicleType" asp-items="Model.VehicleTypes" class="form-select" disabled></select>
-
-        <input type="hidden" asp-for="VehicleType" />
-        <small class="form-text text-muted">
-            Different vehicle types must park in different spots.  
-            Please check out first, then check in again.
-        </small>
+        <select asp-for="VehicleType" 
+            asp-items="VehicleTypeHelper.GetValidVehicleTypes(Model.VehicleType)" 
+            class="form-select"
+        ></select>
     }
     else
     {
