@@ -14,6 +14,8 @@ namespace Garage2.Services
 
         public bool IsExisting(string regNumber)
         {
+            // Normalize registration number (Trim + ToUpper)
+            regNumber = regNumber.Trim().ToUpperInvariant();
             return _context.ParkedVehicle.Any(v => v.RegistrationNumber == regNumber);
         }
     }

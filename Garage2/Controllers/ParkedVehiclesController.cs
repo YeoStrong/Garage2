@@ -223,7 +223,11 @@ public class ParkedVehiclesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ParkedVehicleFormViewModel viewModel)
+
     {
+        // Normalize registration number (Trim + ToUpper)
+        viewModel.RegistrationNumber = viewModel.RegistrationNumber.Trim().ToUpper();
+
         bool regExists = await _context.ParkedVehicle.AnyAsync(v => v.RegistrationNumber == viewModel.RegistrationNumber);
 
         if (regExists)
@@ -337,6 +341,8 @@ public class ParkedVehiclesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, ParkedVehicleFormViewModel vm)
     {
+        // Normalize registration number (Trim + ToUpper)
+        vm.RegistrationNumber = vm.RegistrationNumber.Trim().ToUpper();
         if (id != vm.Id)
         {
             return NotFound();
