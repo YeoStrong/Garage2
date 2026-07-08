@@ -1,14 +1,12 @@
 using Garage2.Models.Entities;
 using Garage2.Models.Enums;
-using Garage2.Models.Parking;
 using Garage2.Models.ViewModels;
 using Garage2.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using Garage2.Models.ViewModels;
+
 
 public class ParkedVehiclesController : Controller
 {
@@ -90,7 +88,8 @@ public class ParkedVehiclesController : Controller
                 Id = v.Id,
                 VehicleType = v.VehicleType,
                 RegistrationNumber = v.RegistrationNumber,
-                ArrivalTime = v.ArrivalTime
+                ArrivalTime = v.ArrivalTime,
+                AssignedSpotNumber = v.AssignedSpotNumber
             })
             .ToListAsync();
 
@@ -224,7 +223,11 @@ public class ParkedVehiclesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ParkedVehicleFormViewModel viewModel)
+
     {
+        // Normalize registration number (Trim + ToUpper)
+        viewModel.RegistrationNumber = viewModel.RegistrationNumber.Trim().ToUpper();
+
         bool regExists = await _context.ParkedVehicle.AnyAsync(v => v.RegistrationNumber == viewModel.RegistrationNumber);
 
         if (regExists)
@@ -338,6 +341,8 @@ public class ParkedVehiclesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, ParkedVehicleFormViewModel vm)
     {
+        // Normalize registration number (Trim + ToUpper)
+        vm.RegistrationNumber = vm.RegistrationNumber.Trim().ToUpper();
         if (id != vm.Id)
         {
             return NotFound();
@@ -444,6 +449,8 @@ public class ParkedVehiclesController : Controller
             Model = parkedvehicle.Model,
             Color = parkedvehicle.Color,
             NumberOfWheels = parkedvehicle.NumberOfWheels,
+            //Ny kod for Spot in thr recept
+            AssignedSpotNumber = parkedvehicle.AssignedSpotNumber,
             ArrivalTime = parkedvehicle.ArrivalTime,
             CheckOutTime = checkOutTime,
 
