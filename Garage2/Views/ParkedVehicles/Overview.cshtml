@@ -20,6 +20,7 @@
         {
             var isFull = !spot.IsFree;
             var isMotorcycleShared = spot.OccupyingVehicleType?.ToString() == "Motorcycle" && spot.MotorcycleSlotsUsed > 0;
+            var isBicycleShared = spot.OccupyingVehicleType?.ToString() == "Bicycle" && spot.BicycleSlotsUsed > 0;
 
             string fractionClass = isFull ? "spot-occupied" : "spot-free";
             if (isMotorcycleShared)
@@ -29,6 +30,17 @@
                 else if (spot.MotorcycleSlotsUsed == 2)
                     {fractionClass = "moto-2of3";}
             }
+            if (isBicycleShared)
+            {
+                if (spot.BicycleSlotsUsed == 1)
+                    {fractionClass = "bicy-1of5";}
+                else if (spot.BicycleSlotsUsed == 2)
+                    {fractionClass = "bicy-2of5";}
+                else if (spot.BicycleSlotsUsed == 3)
+                    {fractionClass = "bicy-3of5";}
+                else if (spot.BicycleSlotsUsed == 4)
+                    {fractionClass = "bicy-4of5";}
+            }
 
             <div class="spot-tile @fractionClass">
                 <div class="spot-number">#@spot.SpotNumber</div>
@@ -36,6 +48,10 @@
                 @if (isMotorcycleShared)
                 {
                     <div class="spot-status">🏍 @spot.MotorcycleSlotsUsed/3</div>
+                }
+                else if (isBicycleShared)
+                {
+                    <div class="spot-status">🚲 @spot.BicycleSlotsUsed/5</div>
                 }
                 else if (!spot.IsFree && spot.OccupyingVehicleType != null)
                 {

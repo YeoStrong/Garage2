@@ -213,3 +213,35 @@
         var(--free-spot-color) 66%
     );
 }
+
+.bicy-1of5 {
+    background: linear-gradient(
+        to right,
+        var(--secondary-color-soft) 20%,
+        var(--free-spot-color) 20%
+    );
+}
+
+.bicy-2of5 {
+    background: linear-gradient(
+        to right,
+        var(--secondary-color-soft) 40%,
+        var(--free-spot-color) 40%
+    );
+}
+
+.bicy-3of5 {
+    background: linear-gradient(
+        to right,
+        var(--secondary-color-soft) 60%,
+        var(--free-spot-color) 60%
+    );
+}
+
+.bicy-4of5 {
+    background: linear-gradient(
+        to right,
+        var(--secondary-color-soft) 80%,
+        var(--free-spot-color) 80%
+    );
+}

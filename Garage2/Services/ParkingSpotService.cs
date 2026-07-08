@@ -50,6 +50,18 @@ namespace Garage2.Services
                     {
                         spot.IsFree = false;
                     }
+                } else if (VehicleSpotRequirement.IsBicycleType(vehicle.VehicleType))
+                {
+                    var spot = spots.FirstOrDefault(s => s.SpotNumber == start);
+                    if (spot == null) continue;
+
+                    spot.BicycleSlotsUsed++;
+                    spot.OccupyingVehicleType = VehicleType.Bicycle;
+
+                    if (spot.BicycleSlotsUsed >= VehicleSpotRequirement.BicycleSlotsPerSpot)
+                    {
+                        spot.IsFree = false;
+                    }
                 }
                 else
                 {
@@ -77,6 +89,9 @@ namespace Garage2.Services
             if (VehicleSpotRequirement.IsMotorcycleType(type))
             {
                 return HasFreeMotorcycleSlot(overview);
+            } else if (VehicleSpotRequirement.IsBicycleType(type))
+            {
+                return HasFreeBicycleSlot(overview);
             }
 
             int required = VehicleSpotRequirement.GetRequiredWholeSpots(type);
@@ -93,6 +108,9 @@ namespace Garage2.Services
                 if (VehicleSpotRequirement.IsMotorcycleType(type))
                 {
                     result[type] = HasFreeMotorcycleSlot(overview);
+                } else if (VehicleSpotRequirement.IsBicycleType(type))
+                {
+                    result[type] = HasFreeBicycleSlot(overview);
                 }
                 else
                 {
@@ -123,6 +141,20 @@ namespace Garage2.Services
                 if (spot == null)
                 {
                     return ParkingAssignmentResult.Fail("No motorcycle slot available.");
+                }
+
+                vehicle.AssignedSpotNumber = spot.SpotNumber;
+                _context.SaveChanges();
+                return ParkingAssignmentResult.Ok(new List<int> { spot.SpotNumber });
+            } else if (VehicleSpotRequirement.IsBicycleType(type))
+            {
+                var spot = overview.FirstOrDefault(s =>
+                    s.BicycleSlotsUsed < VehicleSpotRequirement.BicycleSlotsPerSpot &&
+                    (s.OccupyingVehicleType == null || s.OccupyingVehicleType == VehicleType.Bicycle));
+
+                if (spot == null)
+                {
+                    return ParkingAssignmentResult.Fail("No bicycle slot available.");
                 }
 
                 vehicle.AssignedSpotNumber = spot.SpotNumber;
@@ -162,6 +194,13 @@ namespace Garage2.Services
             return overview.Any(s =>
                 s.MotorcycleSlotsUsed < VehicleSpotRequirement.MotorcycleSlotsPerSpot &&
                 (s.OccupyingVehicleType == null || s.OccupyingVehicleType == VehicleType.Motorcycle));
+        }
+
+        private static bool HasFreeBicycleSlot(IReadOnlyList<ParkingSpotInfo> overview)
+        {
+            return overview.Any(s =>
+                s.BicycleSlotsUsed < VehicleSpotRequirement.BicycleSlotsPerSpot &&
+                (s.OccupyingVehicleType == null || s.OccupyingVehicleType == VehicleType.Bicycle));
         }
 
         private static int? FindContiguousFreeStart(IReadOnlyList<ParkingSpotInfo> overview, int required)

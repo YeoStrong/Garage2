@@ -25,5 +25,6 @@ namespace Garage2.Models.Parking
         /// Only relevant when the spot is being used for motorcycles.
         /// </summary>
         public int MotorcycleSlotsUsed { get; set; }
+        public int BicycleSlotsUsed { get; set; }
     }
 }
