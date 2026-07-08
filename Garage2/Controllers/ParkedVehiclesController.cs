@@ -53,11 +53,11 @@ public class ParkedVehiclesController : Controller
                 break;
 
             case "TypeAsc":
-                vehicleQuery = vehicleQuery.OrderBy(v => v.VehicleType);
+                vehicleQuery = vehicleQuery.OrderBy(v => v.VehicleType.ToString());
                 break;
 
             case "TypeDesc":
-                vehicleQuery = vehicleQuery.OrderByDescending(v => v.VehicleType);
+                vehicleQuery = vehicleQuery.OrderByDescending(v => v.VehicleType.ToString());
                 break;
 
             case "DateAsc":
