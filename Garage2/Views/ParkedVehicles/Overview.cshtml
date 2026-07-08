@@ -57,8 +57,8 @@
                     <div class="spot-status">
                         @spot.OccupyingVehicleType.GetDisplayIcon()
 
-                        @(isMotorcycleShared ? spot.MotorcycleSlotsUsed/3 :
-                        isBicycleShared ? spot.BicycleSlotsUsed/5 :
+                        @(isMotorcycleShared ? $"{spot.MotorcycleSlotsUsed}/3" :
+                        isBicycleShared ? $"{spot.BicycleSlotsUsed}/5" :
                         !spot.IsFree ? (spot.OccupyingVehicleRegNums != null && !spot.IsMiddleSpot && !spot.IsRightSpot
                                 ? spot.OccupyingVehicleRegNums[0].Substring(0, 3) + "..." 
                                 : "") :
