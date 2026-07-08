@@ -93,12 +93,13 @@ public class ParkedVehiclesController : Controller
             })
             .ToListAsync();
 
-        if (!string.IsNullOrEmpty(searchTime)) {
+        if (!string.IsNullOrEmpty(searchTime)) 
+        {
             searchTime = searchTime.Trim().ToLower();
 
             bool isDate = DateTime.TryParse(searchTime, out DateTime parsedDate);
-            bool isYear = int.TryParse(searchTime, out int year);
-            bool isDay = int.TryParse(searchTime, out int day);
+
+            bool hasColon = searchTime.Contains(":");
 
             bool isNumber = int.TryParse(searchTime, out int number);
 
@@ -118,15 +119,11 @@ public class ParkedVehiclesController : Controller
             bool isDouble = double.TryParse(searchTime, out double doubleNumber);
 
             vehicles = vehicles.Where(v =>
-                FormatDuration(v.ArrivalTime).Contains(searchTime) ||
-                (isDate && v.ArrivalTime.Date == parsedDate.Date) ||
-                (isYear && v.ArrivalTime.Year == year) ||
-                (isDay && v.ArrivalTime.Day == day) ||
-                (isNumber && v.ArrivalTime.Month == number) ||
+                (isDate && hasColon && v.ArrivalTime.Hour == parsedDate.Hour && v.ArrivalTime.Minute == parsedDate.Minute) ||
+                (isDate && !hasColon && v.ArrivalTime.Date == parsedDate.Date) ||
+                (isNumber && (v.ArrivalTime.Year == number || v.ArrivalTime.Day == number || v.ArrivalTime.Month == number)) ||
                 (isMonthName && months[v.ArrivalTime.Month - 1].Contains(searchTime)) ||
-                (isWeekName && weeks[(int)v.ArrivalTime.DayOfWeek].Contains(searchTime)) ||
-                v.ArrivalTime.Minute.ToString().Contains(searchTime) ||
-                v.ArrivalTime.Hour.ToString().Contains(searchTime)
+                (isWeekName && weeks[(int)v.ArrivalTime.DayOfWeek].Contains(searchTime))
             ).ToList();
         }
 
@@ -213,8 +210,14 @@ public class ParkedVehiclesController : Controller
     public IActionResult Create()
     {
         var viewModel = new ParkedVehicleFormViewModel();
-
         viewModel.VehicleTypes = BuildVehicleTypeSelectList();
+
+        ViewBag.SpotMap = new ParkingOverviewViewModel
+        {
+            TotalSpots = _parkingSpotService.TotalSpots,
+            FreeSpotCount = _parkingSpotService.GetFreeSpotCount(),
+            Spots = _parkingSpotService.GetSpotOverview()
+        };
 
         return View(viewModel);
     }
@@ -285,6 +288,13 @@ public class ParkedVehiclesController : Controller
         }
 
         viewModel.VehicleTypes = BuildVehicleTypeSelectList();
+
+        ViewBag.SpotMap = new ParkingOverviewViewModel
+        {
+            TotalSpots = _parkingSpotService.TotalSpots,
+            FreeSpotCount = _parkingSpotService.GetFreeSpotCount(),
+            Spots = _parkingSpotService.GetSpotOverview()
+        };
 
         return View(viewModel);
     }
