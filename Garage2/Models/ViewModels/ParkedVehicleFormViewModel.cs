@@ -45,5 +45,8 @@ namespace Garage2.Models.ViewModels
 
         [BindNever]
         public IEnumerable<SelectListItem>? VehicleTypes { get; set; }
+
+        [Display(Name = "Parking Spot")]
+        public int? AssignedSpotNumber { get; set; }
     }
 }

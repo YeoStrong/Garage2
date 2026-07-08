@@ -1,11 +1,12 @@
 ﻿using Garage2.Models.Entities;
+using Garage2.Models.Enums;
 
 namespace Garage2.Models.ViewModels
 {
     // ViewModel used to display a parking receipt after a vehicle is checked out.
     public class ReceiptViewModel
     {
-        public string VehicleType { get; set; } = string.Empty;
+        public VehicleType VehicleType { get; set; }
 
         public string RegistrationNumber { get; set; } = string.Empty;
 

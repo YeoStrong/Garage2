@@ -333,6 +333,7 @@ public class ParkedVehiclesController : Controller
             Model = parkedvehicle.Model,
             NumberOfWheels = parkedvehicle.NumberOfWheels,
             ArrivalTime = parkedvehicle.ArrivalTime,
+            AssignedSpotNumber = parkedvehicle.AssignedSpotNumber,
 
             VehicleTypes = Enum.GetValues(typeof(VehicleType))
                 .Cast<VehicleType>()
@@ -453,7 +454,7 @@ public class ParkedVehiclesController : Controller
         // Create the receipt data that will be displayed after check out
         var receiptViewModel = new ReceiptViewModel
         {
-            VehicleType = parkedvehicle.VehicleType.ToString(),
+            VehicleType = parkedvehicle.VehicleType,
             RegistrationNumber = parkedvehicle.RegistrationNumber,
             Brand = parkedvehicle.Brand,
             Model = parkedvehicle.Model,
