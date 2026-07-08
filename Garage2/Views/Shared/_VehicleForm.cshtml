@@ -1,5 +1,8 @@
 ﻿@model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
 
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.ArrivalTime)
+@Html.HiddenFor(m => m.AssignedSpotNumber)
 
 <div class="form-group mb-3">
     <label asp-for="RegistrationNumber" class="control-label"></label>
