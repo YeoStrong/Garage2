@@ -4,25 +4,25 @@ namespace Garage2.Models.Enums
 {
     public enum VehicleType
     {
-        [Display(Name = "🚗 Car")]
+        [Display(Name = "🚗 Car", ShortName = "🚗")]
         Car,
 
-        [Display(Name = "🏍 Motorcyclе")]
+        [Display(Name = "🏍 Motorcyclе", ShortName = "🏍")]
         Motorcycle,
 
-        [Display(Name = "🚌 Bus")]
+        [Display(Name = "🚌 Bus", ShortName = "🚌")]
         Bus,
 
-        [Display(Name = "🚚 Truck ")]
+        [Display(Name = "🚚 Truck", ShortName = "🚚")]
         Truck,
 
-        [Display(Name = "🚲 Bicycle")]
+        [Display(Name = "🚲 Bicycle", ShortName = "🚲")]
         Bicycle,
 
-        [Display(Name = "✈️ Airplane")]
+        [Display(Name = "✈️ Airplane", ShortName = "✈️")]
         Airplane,
 
-        [Display(Name = "🚤 Boat")]
+        [Display(Name = "🚤 Boat", ShortName = "🚤")]
         Boat
     }
 }

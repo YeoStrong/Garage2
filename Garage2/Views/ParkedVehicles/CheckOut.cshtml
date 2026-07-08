@@ -1,11 +1,13 @@
+@using Garage2.Helpers
+
 @model Garage2.Models.Entities.ParkedVehicle
 
 @{
     ViewData["Title"] = "Check Out";
 
-    var badgeColor = VehicleTypeBadgeHelper.GetBadgeColor(Model.VehicleType);
+    var badgeColor = VehicleTypeHelper.GetBadgeColor(Model.VehicleType);
 
-    var badgeTextColor = VehicleTypeBadgeHelper.GetBadgeTextColor(Model.VehicleType);
+    var badgeTextColor = VehicleTypeHelper.GetBadgeTextColor(Model.VehicleType);
 }
 
 <div class="container">
@@ -61,6 +63,9 @@
 
                             <dt class="col-5 sv-label">Wheels</dt>
                             <dd class="col-7 mb-0">@Model.NumberOfWheels</dd>
+
+                            <dt class="col-5 sv-label">Parking Spot</dt>
+                            <dd class="col-7 mb-0">@SpotHelper.GetSpotDisplay(Model.AssignedSpotNumber, Model.VehicleType)</dd>
                         </dl>
 
                         <form asp-action="CheckOut">

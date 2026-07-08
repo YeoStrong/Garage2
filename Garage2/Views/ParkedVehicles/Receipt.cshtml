@@ -1,4 +1,6 @@
-﻿@model Garage2.Models.ViewModels.ReceiptViewModel
+﻿@using Garage2.Helpers
+
+@model Garage2.Models.ViewModels.ReceiptViewModel
 
 @{
     ViewData["Title"] = "Garage Receipt";
@@ -37,6 +39,11 @@
                 <tr>
                     <th>Vehicle Type</th>
                     <td>@Model.VehicleType</td>
+                </tr>
+               
+                <tr>
+                    <th>Parking Spot</th>
+                    <td>@SpotHelper.GetSpotDisplay(Model.AssignedSpotNumber, Model.VehicleType)</td>
                 </tr>
 
                 <tr>
@@ -112,7 +119,7 @@
         </button>
 
         <a asp-action="Index"
-           class="btn btn-primary d-print-none">
+           class="btn sv-btn-create d-print-none">
             Back to Garage
         </a>
 

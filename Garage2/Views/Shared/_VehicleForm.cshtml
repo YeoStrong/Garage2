@@ -1,5 +1,10 @@
-﻿@model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
+﻿@using Garage2.Helpers
 
+@model Garage2.Models.ViewModels.ParkedVehicleFormViewModel
+
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.ArrivalTime)
+@Html.HiddenFor(m => m.AssignedSpotNumber)
 
 <div class="form-group mb-3">
     <label asp-for="RegistrationNumber" class="control-label"></label>
@@ -9,7 +14,19 @@
 
 <div class="form-group mb-3">
     <label asp-for="VehicleType" class="control-label"></label>
-    <select asp-for="VehicleType" asp-items="Model.VehicleTypes" class="form-select"></select>
+
+    @if (Model.Id.HasValue)
+    {
+        <select asp-for="VehicleType" 
+            asp-items="VehicleTypeHelper.GetValidVehicleTypes(Model.VehicleType)" 
+            class="form-select"
+        ></select>
+    }
+    else
+    {
+        <select asp-for="VehicleType" asp-items="Model.VehicleTypes" class="form-select"></select>
+    }
+
     <span asp-validation-for="VehicleType" class="text-danger"></span>
 </div>
 
