@@ -6,5 +6,7 @@
         public Garage2.Models.Enums.VehicleType VehicleType { get; set; }
         public string RegistrationNumber { get; set; } = string.Empty;
         public DateTime ArrivalTime { get; set; }
+
+        public int? AssignedSpotNumber { get; set; }
     }
 }
