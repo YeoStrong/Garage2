@@ -12,7 +12,22 @@
 
 <div class="form-group mb-3">
     <label asp-for="VehicleType" class="control-label"></label>
-    <select asp-for="VehicleType" asp-items="Model.VehicleTypes" class="form-select"></select>
+
+    @if (Model.Id.HasValue)
+    {
+        <select asp-for="VehicleType" asp-items="Model.VehicleTypes" class="form-select" disabled></select>
+
+        <input type="hidden" asp-for="VehicleType" />
+        <small class="form-text text-muted">
+            Different vehicle types must park in different spots.  
+            Please check out first, then check in again.
+        </small>
+    }
+    else
+    {
+        <select asp-for="VehicleType" asp-items="Model.VehicleTypes" class="form-select"></select>
+    }
+
     <span asp-validation-for="VehicleType" class="text-danger"></span>
 </div>
 
