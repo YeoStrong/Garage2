@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Parking Rates";
+}
+
+<h1 class="mb-4">Garage Parking Rates</h1>
+
+<div class="card shadow">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Price List</h4>
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Vehicle Type</th>
+                    <th>Day Rate (06:00–20:00)</th>
+                    <th>Night Rate (20:00–06:00)</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Car</td>
+                    <td>20 SEK/hour</td>
+                    <td>2 SEK/hour</td>
+                </tr>
+
+                <tr>
+                    <td>Motorcycle</td>
+                    <td>20 SEK/hour</td>
+                    <td>2 SEK/hour</td>
+                </tr>
+
+                <tr>
+                    <td>Bus</td>
+                    <td>40 SEK/hour</td>
+                    <td>4 SEK/hour</td>
+                </tr>
+
+                <tr>
+                    <td>Truck</td>
+                    <td>40 SEK/hour</td>
+                    <td>4 SEK/hour</td>
+                </tr>
+
+                <tr>
+                    <td>Boat</td>
+                    <td>60 SEK/hour</td>
+                    <td>6 SEK/hour</td>
+                </tr>
+
+                <tr>
+                    <td>Airplane</td>
+                    <td>60 SEK/hour</td>
+                    <td>6 SEK/hour</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-info">
+            <strong>Note:</strong> Parking is free on Sundays.
+        </div>
+
+        <a asp-action="Index" class="btn btn-primary">
+            Back to Garage
+        </a>
+
+    </div>
+</div>
