@@ -178,6 +178,8 @@
     padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .spot-free {

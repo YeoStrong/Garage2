@@ -128,6 +128,9 @@ public class ParkedVehiclesController : Controller
             bool isDouble = double.TryParse(searchTime, out double doubleNumber);
 
             vehicles = vehicles.Where(v =>
+                FormatDuration(v.ArrivalTime).Contains(searchTime) ||
+                v.ArrivalTime.Hour.ToString().Contains(searchTime) ||
+                v.ArrivalTime.Minute.ToString().Contains(searchTime) ||
                 (isDate && hasColon && v.ArrivalTime.Hour == parsedDate.Hour && v.ArrivalTime.Minute == parsedDate.Minute) ||
                 (isDate && !hasColon && v.ArrivalTime.Date == parsedDate.Date) ||
                 (isNumber && (v.ArrivalTime.Year == number || v.ArrivalTime.Day == number || v.ArrivalTime.Month == number)) ||
