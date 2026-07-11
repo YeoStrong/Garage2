@@ -27,5 +27,6 @@ namespace Garage2.Models.ViewModels
         public TimeSpan ParkingDuration => CheckOutTime - ArrivalTime;
 
         public decimal TotalPrice { get; set; }
+        public string PriceInfo { get; set; } = string.Empty;
     }
 }

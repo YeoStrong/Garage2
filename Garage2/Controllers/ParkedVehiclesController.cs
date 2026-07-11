@@ -180,7 +180,11 @@ public class ParkedVehiclesController : Controller
         {
             TotalVehicles = vehicles.Count,
             TotalWheels = vehicles.Sum(v => v.NumberOfWheels),
-            EstimatedCurrentRevenue = vehicles.Sum(v => _garageFeeService.CalculateFee(v.ArrivalTime, now)),
+            EstimatedCurrentRevenue = vehicles.Sum(v =>
+            _garageFeeService.CalculateFee(
+               v.VehicleType,
+               v.ArrivalTime,
+                now)),
             VehicleCountsByType = vehicles
                 .GroupBy(v => v.VehicleType)
                 .ToDictionary(g => g.Key, g => g.Count()),
@@ -474,14 +478,19 @@ public class ParkedVehiclesController : Controller
             Model = parkedvehicle.Model,
             Color = parkedvehicle.Color,
             NumberOfWheels = parkedvehicle.NumberOfWheels,
-            //Ny kod for Spot in thr recept
+
+            // Ny kod för Spot i recept
             AssignedSpotNumber = parkedvehicle.AssignedSpotNumber,
+
             ArrivalTime = parkedvehicle.ArrivalTime,
             CheckOutTime = checkOutTime,
 
+            PriceInfo = _garageFeeService.GetPriceInfo(parkedvehicle.VehicleType),
+
             TotalPrice = _garageFeeService.CalculateFee(
-                parkedvehicle.ArrivalTime,
-                checkOutTime)
+         parkedvehicle.VehicleType,
+         parkedvehicle.ArrivalTime,
+         checkOutTime)
         };
 
         _context.ParkedVehicle.Remove(parkedvehicle);
@@ -533,5 +542,9 @@ public class ParkedVehiclesController : Controller
                 Value = ((int)v).ToString(),
                 Disabled = !(availability.TryGetValue(v, out var available) && available)
             });
+    }
+    public IActionResult ParkingRates()
+    {
+        return View();
     }
 }

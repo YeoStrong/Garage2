@@ -69,3 +69,23 @@
     cursor: default;
     pointer-events: none; 
 }
+@media (max-width: 768px) {
+    .sv-btn-create {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .search-container {
+        flex-direction: column;
+    }
+}
+@media (max-width: 768px) {
+    .input-group {
+        width: 100%;
+    }
+
+    .sv-btn-create {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
